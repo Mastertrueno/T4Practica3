@@ -42,7 +42,7 @@ class Category {
     }
 }
 
-class Ressource {
+class Resource {
     duration;
     link;
 
@@ -139,4 +139,18 @@ class Coords {
 		return grades + "°" + minutes + "'" + seconds + "''" + direction; 
 	}
 	
+}
+
+class Movie {
+    resource;
+    locations;
+
+    constructor(resource, locations) {
+        if (!resource) throw new EmptyValueException("resource", resource);
+        if (!locations) throw new EmptyValueException("locations", locations);
+        if (!(resource instanceof(Resource))) throw new InvalidAccessConstructorException("resource", resource);
+        if (!(locations instanceof(Coords))) throw new InvalidAccessConstructorException("locations", locations);
+        this.resource = resource;
+        this.locations = locations;
+    }
 }
