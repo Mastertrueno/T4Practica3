@@ -154,3 +154,20 @@ class Movie {
         this.locations = locations;
     }
 }
+class User {
+    #username;
+    email;
+    #password;
+    constructor(username, email, password) {
+        if (!username) throw new InvalidValueException("username", username);
+        if (!email) throw new InvalidValueException("email", email);
+        if (!/[a-zA-Z0-9!#$%&'*_+-]([\.]?[a-zA-Z0-9!#$%&'*_+-])+@[a-zA-Z0-9]([^@&%$\/()=?¿!.,:;]|\d)+[a-zA-Z0-9][\.][a-zA-Z]{2,4}([\.][a-zA-Z]{2})?/.test(email)) 
+        throw new InvalidValueException("email", email);
+        if (!password) throw new InvalidValueException("password", password);
+        if (!/[a-zA-Z0-9]{8}/.test(password)) throw new InvalidValueException("password", password);
+        this.#username = username;
+        this.email = email;
+        this.#password = password;
+
+    }
+}
