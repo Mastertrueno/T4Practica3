@@ -246,8 +246,11 @@ class VideoSystem {
     addCatecogy(category) {
         if (!category) throw new EmptyValueException("categories", categories);
         if (!(category instanceof Category)) throw new InvalidAccessConstructorException("categories", categories);
+        for (let index = 0; index < this.categories.length; index++) {
+            if (this.categories[index] == category) throw new InvalidValueException("category", category);
+        }
         this.categories.push(category);
-        return "Categoria añadida";
+        return this.categories.length;
     }
 
     removeCategory(category) {
@@ -262,8 +265,8 @@ class VideoSystem {
             index++;
         }
         if (borrado) {
-            return "Categoria borrado"
-        } else throw new InvalidValueException("user", user);
+            return this.categories.length;
+        } else throw new InvalidValueException("category", category);
     }
 
     get users() {
@@ -284,10 +287,10 @@ class VideoSystem {
         if (!(user instanceof User)) throw new InvalidAccessConstructorException("user", user);
         for (let index = 0; index < users.length; index++) {
             if (this.users[index].Name == user.Name) throw new InvalidValueException("user", user);
-            if (this.users[index].Email == user.Name) throw new InvalidValueException("user", user);
+            if (this.users[index].Email == user.Email) throw new InvalidValueException("user", user);
         }
         this.users.push(user);
-        return "Usuario añadido";
+        return this.users.length;
     }
     removeUser(user) {
         if (!user) throw new EmptyValueException("user", user);
@@ -296,14 +299,14 @@ class VideoSystem {
         let index = 0;
         //busca el nombre del curso a borrar
         while (index < this.users.length && borrado == false) {
-            if (this.users[index].Name == user) {
+            if (this.users[index] == user) {
                 this.users.splice(index, 1);
                 borrado = true;
             }
             index++;
         }
         if (borrado) {
-            return "Usuario borrado"
+            return this.users.length;
         } else throw new InvalidValueException("user", user);
     }
     get productions() {
@@ -319,6 +322,15 @@ class VideoSystem {
             }
         }
     }
+    addProduction(production) {
+        if (!production) throw new EmptyValueException("production", production);
+        if (!(production instanceof Production)) throw new InvalidAccessConstructorException("production", production);
+        for (let index = 0; index < production.length; index++) {
+            if (this.productions[index].Name == production.Name) throw new InvalidValueException("production", production);
+        }
+        this.production.push(production);
+        return this.production.length;
+    }
     removeProduction(production) {
         if (!production) throw new EmptyValueException("production", production);
         if (!(production instanceof Production)) throw new InvalidAccessConstructorException("production", production);
@@ -326,16 +338,17 @@ class VideoSystem {
         let index = 0;
         //busca el nombre del curso a borrar
         while (index < this.productions.length && borrado == false) {
-            if (this.users[index].Name == production) {
-                this.users.splice(index, 1);
+            if (this.productions[index] == production) {
+                this.productions.splice(index, 1);
                 borrado = true;
             }
             index++;
         }
         if (borrado) {
-            return "Usuario borrado"
+            return this.production.length;
         } else throw new InvalidValueException("production", production);
     }
+    //getter de actores
     get actors() {
         // referencia para habilitar el closure en el objeto. En el generador se pierde la referencia this, por lo que hay que guardarla como closure
         let array = this.actors;
@@ -348,5 +361,80 @@ class VideoSystem {
                 }
             }
         }
+    }
+//funcion que añade un actor a la lista
+    addActor(actor) {
+        //compruebo que es valido
+        if (!actor) throw new EmptyValueException("actor", actor);
+        if (!(actor instanceof Person)) throw new InvalidAccessConstructorException("actor", actor);
+        for (let index = 0; index < this.actors.length; index++) {
+            if (this.actors[index] == actor) throw new InvalidValueException("actor", actor);
+        }
+        this.actors.push(actor);
+        return this.actors.length;
+    }
+    //funcion que quita un actor de la lista
+    removeActor(actor) {
+        if (!actor) throw new EmptyValueException("actor", actor);
+        if (!(actor instanceof Person)) throw new InvalidAccessConstructorException("actor", actor);
+        let borrado = false;
+        let index = 0;
+        //busca el nombre del curso a borrar
+        while (index < this.actors.length && borrado == false) {
+            if (this.actors[index] == actor) {
+                this.actors.splice(index, 1);
+                borrado = true;
+            }
+            index++;
+        }
+        if (borrado) {
+            return this.actors.length;
+        } else throw new InvalidValueException("actor", actor);
+    }
+    //getter de actores
+    get directors() {
+        // referencia para habilitar el closure en el objeto. En el generador se pierde la referencia this, por lo que hay que guardarla como closure
+        let array = this.directors;
+        // Los getter no admiten generadores, deben devolver un objeto iterable. [Symbol.iterator]() puede ser generador.
+        return {
+            *[Symbol.iterator]() {
+                // Recorremos todos los autores menos el de por defecto.
+                for (let i = 1; i < array.length; i++) {
+                    yield array[i];
+                }
+            }
+        }
+    }
+    //funcion que añade un actor a la lista
+    addDirector(director) {
+        //compruebo que es valido
+        if (!director) throw new EmptyValueException("director", director);
+        if (!(director instanceof Person)) throw new InvalidAccessConstructorException("director", director);
+        for (let index = 0; index < this.directors.length; index++) {
+            if (this.directors[index] == director) throw new InvalidValueException("director", director);
+        }
+        this.directors.push(actor);
+        return this.directors.length;
+    }
+    //funcion que quita un actor de la lista
+    removeDirector(director) {
+        if (!director) throw new EmptyValueException("director", director);
+        if (!(director instanceof Person)) throw new InvalidAccessConstructorException("director", director);
+        let borrado = false;
+        let index = 0;
+        //busca el nombre del curso a borrar
+        while (index < this.directors.length && borrado == false) {
+            if (this.directors[index] == actor) {
+                this.directors.splice(index, 1);
+                borrado = true;
+            }
+            index++;
+        }
+        if (borrado) {
+            return this.directors.length;
+        } else throw new InvalidValueException("director", director);
+    }
+    assignCategory(){
+
     }
 }
