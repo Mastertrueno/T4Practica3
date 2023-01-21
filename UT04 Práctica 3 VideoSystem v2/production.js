@@ -197,7 +197,12 @@ class VideoSystem {
     Name;
     users = [];
     productions = [];
-    categories = [];
+    categories = [ // Array contiene objeto literal con la categoría y un array con las imágenes de esa categoría
+        {
+            category: category,
+            production: [production] // El array contiene las referencias al objeto Image
+        }
+    ];
     actors;
     directors;
     constructor(name, users, productions, categories, actors, directors) {
@@ -362,7 +367,7 @@ class VideoSystem {
             }
         }
     }
-//funcion que añade un actor a la lista
+    //funcion que añade un actor a la lista
     addActor(actor) {
         //compruebo que es valido
         if (!actor) throw new EmptyValueException("actor", actor);
@@ -434,7 +439,133 @@ class VideoSystem {
             return this.directors.length;
         } else throw new InvalidValueException("director", director);
     }
-    assignCategory(){
+    assignCategory(category, production) {
+        if (!category) throw new EmptyValueException("category", category);
+        if (!production) throw new EmptyValueException("production", production);
+        if (!(category instanceof Category)) throw new InvalidAccessConstructorException("category", category);
+        if (!(production instanceof Production)) throw new InvalidAccessConstructorException("production", production);
+        let existe = false;
+        let index = 0;
+        while (index < this.categories.length && existe == false) {
+            index++;
+        }
+    }
+    deassignCategory(category, production) {
+        if (!category) throw new EmptyValueException("category", category);
+        if (!production) throw new EmptyValueException("production", production);
+        if (!(category instanceof Category)) throw new InvalidAccessConstructorException("category", category);
+        if (!(production instanceof Production)) throw new InvalidAccessConstructorException("production", production);
+        let existe = false;
+        let index = 0;
+        while (index < this.categories.length && existe == false) {
+            index++;
+        }
+    }
+    assignDirector(person, production) {
+        if (!person) throw new EmptyValueException("person", person);
+        if (!production) throw new EmptyValueException("production", production);
+        if (!(person instanceof Person)) throw new InvalidAccessConstructorException("person", person);
+        if (!(production instanceof Production)) throw new InvalidAccessConstructorException("production", production);
+        let existe = false;
+        let index = 0;
+        while (index < this.categories.length && existe == false) {
+            index++;
+        }
+    }
+    deassignDirector(person, production) {
+        if (!person) throw new EmptyValueException("person", person);
+        if (!production) throw new EmptyValueException("production", production);
+        if (!(person instanceof Person)) throw new InvalidAccessConstructorException("person", person);
+        if (!(production instanceof Production)) throw new InvalidAccessConstructorException("production", production);
+        let existe = false;
+        let index = 0;
+        while (index < this.categories.length && existe == false) {
+            index++;
+        }
+    }
+    assignActor(person, production) {
+        if (!person) throw new EmptyValueException("person", person);
+        if (!production) throw new EmptyValueException("production", production);
+        if (!(person instanceof Person)) throw new InvalidAccessConstructorException("person", person);
+        if (!(production instanceof Production)) throw new InvalidAccessConstructorException("production", production);
+        let existe = false;
+        let index = 0;
+        while (index < this.categories.length && existe == false) {
+            index++;
+        }
+    }
+    deassignActor(person, production) {
+        if (!person) throw new EmptyValueException("person", person);
+        if (!production) throw new EmptyValueException("production", production);
+        if (!(person instanceof Person)) throw new InvalidAccessConstructorException("person", person);
+        if (!(production instanceof Production)) throw new InvalidAccessConstructorException("production", production);
+        let existe = false;
+        let index = 0;
+        while (index < this.categories.length && existe == false) {
+            index++;
+        }
+    }
 
+    getCast(production) {
+        if (!production) throw new EmptyValueException("production", production);
+        if (!(production instanceof Production)) throw new InvalidAccessConstructorException("production", production);
+        // referencia para habilitar el closure en el objeto. En el generador se pierde la referencia this, por lo que hay que guardarla como closure
+        let array = this.directors;
+        // Los getter no admiten generadores, deben devolver un objeto iterable. [Symbol.iterator]() puede ser generador.
+        return {
+            *[Symbol.iterator]() {
+                // Recorremos todos los autores menos el de por defecto.
+                for (let i = 1; i < array.length; i++) {
+                    yield array[i];
+                }
+            }
+        }
+    }
+    getProductionsDirector(person) {
+        if (!person) throw new EmptyValueException("person", person);
+        if (!(person instanceof Person)) throw new InvalidAccessConstructorException("person", person);
+        // referencia para habilitar el closure en el objeto. En el generador se pierde la referencia this, por lo que hay que guardarla como closure
+        let array = this.directors;
+        // Los getter no admiten generadores, deben devolver un objeto iterable. [Symbol.iterator]() puede ser generador.
+        return {
+            *[Symbol.iterator]() {
+                // Recorremos todos los autores menos el de por defecto.
+                for (let i = 1; i < array.length; i++) {
+                    yield array[i];
+                }
+            }
+        }
+    }
+    getProductionsActor(person) {
+        if (!person) throw new EmptyValueException("person", person);
+        if (!(person instanceof Person)) throw new InvalidAccessConstructorException("person", person);
+        // referencia para habilitar el closure en el objeto. En el generador se pierde la referencia this, por lo que hay que guardarla como closure
+        let array = this.directors;
+        // Los getter no admiten generadores, deben devolver un objeto iterable. [Symbol.iterator]() puede ser generador.
+        return {
+            *[Symbol.iterator]() {
+                // Recorremos todos los autores menos el de por defecto.
+                for (let i = 1; i < array.length; i++) {
+                    yield array[i];
+                }
+            }
+        }
+    }
+    getProductionsCategory(category) {
+        if (!category) throw new EmptyValueException("category", category);
+        if (!(category instanceof Category)) throw new InvalidAccessConstructorException("category", category);
+        // referencia para habilitar el closure en el objeto. En el generador se pierde la referencia this, por lo que hay que guardarla como closure
+        let array = this.directors;
+        // Los getter no admiten generadores, deben devolver un objeto iterable. [Symbol.iterator]() puede ser generador.
+        return {
+            *[Symbol.iterator]() {
+                // Recorremos todos los autores menos el de por defecto.
+                for (let i = 1; i < array.length; i++) {
+                    yield array[i];
+                }
+            }
+        }
     }
 }
+
+//test
