@@ -8,6 +8,13 @@ import {
     InvalidValueException,
     AbstractClassException
 } from './BaseException.js';
+//Excepción valor ya existente
+class ExistingValueException extends BaseException {
+    constructor(param, fileName, lineNumber) {
+        super("The value " + param + " already exist", fileName, lineNumber);
+        this.name = "InvalidAccessConstructorException";
+    }
+}
 //objeto persona
 class Person {
     Name;
@@ -61,20 +68,17 @@ class Resource {
 class Production {
     Title;
     Nacionality;
-    Publlication;
+    Publication;
     Synopsis;
     Image;
 
-    constructor(title, nacionality, publlication, synopsis, image) {
+    constructor(title, nacionality, publication, synopsis, image) {
         if (!title) throw new EmptyValueException("title", title);
-        if (!nacionality) throw new EmptyValueException("nacionality", nacionality);
-        if (!publlication) throw new EmptyValueException("publlication", publlication);
-        if (!/^(?:3[01]|[12][0-9]|0?[1-9])([\-/.])(0?[1-9]|1[1-2])\1\d{4}$/.test(publlication)) throw InvalidValueException("publlication", publlication);
-        if (!synopsis) throw new EmptyValueException("synopsis", synopsis);
-        if (!image) throw new EmptyValueException("image", image);
+        if (!publication) throw new EmptyValueException("publication", publication);
+        if (!/^(?:3[01]|[12][0-9]|0?[1-9])([\-/.])(0?[1-9]|1[1-2])\1\d{4}$/.test(publication)) throw InvalidValueException("publication", publication);
         this.Title = title;
         this.Nacionality = nacionality;
-        this.Publlication = publlication;
+        this.Publication = publication;
         this.Synopsis = synopsis;
         this.Image = image;
     }
@@ -111,7 +115,7 @@ class Serie {
 }
 
 class User {
-    #Username;
+    Username;
     Email;
     #Password;
     constructor(username, email, password) {
@@ -121,7 +125,7 @@ class User {
             throw new InvalidValueException("email", email);
         if (!password) throw new InvalidValueException("password", password);
         if (!/[a-zA-Z0-9]{8}/.test(password)) throw new InvalidValueException("password", password);
-        this.#Username = username;
+        this.Username = username;
         this.Email = email;
         this.#Password = password;
 
@@ -203,28 +207,28 @@ class VideoSystem {
             production: [] // El array contiene las referencias al objeto production
         }
     ];
-    actors;
-    directors;
-    constructor(name, users, productions, categories, actors, directors) {
+    actors = [];
+    directors = [];
+    constructor(name, user, production, categori, actor, director) {
         //compruebo que no estan vacios y que son del objeto deseado
         if (!name) throw new EmptyValueException("name", name);
-        if (!users) throw new EmptyValueException("users", users);
-        if (!(users instanceof User)) throw new InvalidAccessConstructorException("users", users);
-        if (!productions) throw new EmptyValueException("productions", productions);
-        if (!(productions instanceof Production)) throw new InvalidAccessConstructorException("productions", productions);
-        if (!categories) throw new EmptyValueException("categories", categories);
-        if (!(categories instanceof Category)) throw new InvalidAccessConstructorException("categories", categories);
-        if (!actors) throw new EmptyValueException("actors", actors);
-        if (!(actors instanceof Person)) throw new InvalidAccessConstructorException("actors", actors);
-        if (!directors) throw new EmptyValueException("directors", directors);
-        if (!(directors instanceof Person)) throw new InvalidAccessConstructorException("directors", directors);
+        if (!user) throw new EmptyValueException("user", user);
+        if (!(user instanceof User)) throw new InvalidAccessConstructorException("user", user);
+        if (!production) throw new EmptyValueException("production", production);
+        if (!(production instanceof Production)) throw new InvalidAccessConstructorException("production", production);
+        if (!categori) throw new EmptyValueException("categori", categori);
+        if (!(categori instanceof Category)) throw new InvalidAccessConstructorException("categori", categori);
+        if (!actor) throw new EmptyValueException("actor", actor);
+        if (!(actor instanceof Person)) throw new InvalidAccessConstructorException("actor", actor);
+        if (!director) throw new EmptyValueException("director", director);
+        if (!(director instanceof Person)) throw new InvalidAccessConstructorException("director", director);
 
         this.Name = name;
-        this.users = users;
-        this.productions = productions;
-        this.categories = categories;
-        this.actors = actors;
-        this.directors = directors;
+        this.addUser(user);
+        this.addProduction(production);
+        this.addCatecogy(categori);
+        this.addActor(actor);
+        this.addDirector(director);
     }
     get name() {
         return this.Name;
@@ -290,7 +294,7 @@ class VideoSystem {
     addUser(user) {
         if (!user) throw new EmptyValueException("user", user);
         if (!(user instanceof User)) throw new InvalidAccessConstructorException("user", user);
-        for (let index = 0; index < users.length; index++) {
+        for (let index = 0; index < this.users.length; index++) {
             if (this.users[index].Name == user.Name) throw new InvalidValueException("user", user);
             if (this.users[index].Email == user.Email) throw new InvalidValueException("user", user);
         }
@@ -330,11 +334,11 @@ class VideoSystem {
     addProduction(production) {
         if (!production) throw new EmptyValueException("production", production);
         if (!(production instanceof Production)) throw new InvalidAccessConstructorException("production", production);
-        for (let index = 0; index < production.length; index++) {
+        for (let index = 0; index < this.productions.length; index++) {
             if (this.productions[index].Name == production.Name) throw new InvalidValueException("production", production);
         }
-        this.production.push(production);
-        return this.production.length;
+        this.productions.push(production);
+        return this.productions.length;
     }
     removeProduction(production) {
         if (!production) throw new EmptyValueException("production", production);
@@ -418,7 +422,7 @@ class VideoSystem {
         for (let index = 0; index < this.directors.length; index++) {
             if (this.directors[index] == director) throw new InvalidValueException("director", director);
         }
-        this.directors.push(actor);
+        this.directors.push(director);
         return this.directors.length;
     }
     //funcion que quita un actor de la lista
@@ -429,7 +433,7 @@ class VideoSystem {
         let index = 0;
         //busca el nombre del curso a borrar
         while (index < this.directors.length && borrado == false) {
-            if (this.directors[index] == actor) {
+            if (this.directors[index] == director) {
                 this.directors.splice(index, 1);
                 borrado = true;
             }
@@ -442,13 +446,34 @@ class VideoSystem {
     assignCategory(category, production) {
         if (!category) throw new EmptyValueException("category", category);
         if (!production) throw new EmptyValueException("production", production);
-        if (!(category instanceof Category)) throw new InvalidAccessConstructorException("category", category);
+        if (category instanceof Array) {
+            let i = 0;
+            while (condition) {
+                if (!(category[i] instanceof Category)) throw new InvalidAccessConstructorException("category", category);
+                i++;
+            }
+        } else {
+            if (!(category instanceof Category)) throw new InvalidAccessConstructorException("category", category);
+        }
         if (!(production instanceof Production)) throw new InvalidAccessConstructorException("production", production);
         let existe = false;
         let index = 0;
-        while (index < this.categories.length && existe == false) {
-            index++;
+        let j = 0;
+        if (category instanceof Array) {
+            while (index < this.categories.length && existe == false) {
+                while (j < category.length && existe == false) {
+                    if (this.categories[index] == category[j]) throw new ExistingValueException(category);
+                    j++;
+                }
+                index++;
+            }
+        } else {
+            while (index < this.categories.length && existe == false) {
+                if (!(this.categories[index].Name == category.Name)) throw new ExistingValueException(category);
+                index++;
+            }
         }
+        return this.categories.length;
     }
     deassignCategory(category, production) {
         if (!category) throw new EmptyValueException("category", category);
@@ -572,19 +597,29 @@ class VideoSystem {
 
 //test
 console.log("Test");
-let act=new Person("Paco","lo","la","10/05/1990","");
-let act2=new Person("Rosa","lo","la","10/05/1990","");
-let act3=new Person("Lis","lo","la","10/05/1990","");
-let dir=new Person("Mac","lo","la","10/05/1980","");
-let dir2=new Person("Rocky","lo","la","10/05/1980","");
-let user=new Person("Lu","lo","la","10/05/1980","");
-let cat=new Category();
-let prod =new Production();
-let v=new VideoSystem("Video",user);
+let act = new Person("Paco", "lo", "la", "10/05/1990", "");
+let act2 = new Person("Rosa", "lo", "la", "10/05/1990", "");
+let act3 = new Person("Lis", "lo", "la", "10/05/1990", "");
+let dir = new Person("Mac", "lo", "la", "10/05/1980", "");
+let dir2 = new Person("Rocky", "lo", "la", "10/05/1980", "");
+let user = new User("Lu", "lume@gmail.com", "12345678");
+//let user2=new User("Lu","lume@gmail.com","123458");//error de contraseña
+//let user3=new User("Lu","lu@gmail.com","12345678");//error el correo
 
-export {BaseException,
-	InvalidAccessConstructorException,
-	EmptyValueException,
-	ParameterValidationException,
-	InvalidValueException,
-	AbstractClassException };
+let cat = new Category("accion", "accionada");
+let prod = new Production("Las llamas", "Español", "20/03/2010", "fuego", "a");
+let v = new VideoSystem("Video", user, prod, cat, act, dir);
+console.log(v.addActor(act2));
+console.log(v.Name);
+console.log(v.Name);
+console.log(v.users());
+console.log();
+
+export {
+    BaseException,
+    InvalidAccessConstructorException,
+    EmptyValueException,
+    ParameterValidationException,
+    InvalidValueException,
+    AbstractClassException
+};
