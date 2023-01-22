@@ -199,8 +199,8 @@ class VideoSystem {
     productions = [];
     categories = [ // Array contiene objeto literal con la categoría y un array con las imágenes de esa categoría
         {
-            category: category,
-            production: [production] // El array contiene las referencias al objeto Image
+            category: "",
+            production: [] // El array contiene las referencias al objeto production
         }
     ];
     actors;
@@ -510,13 +510,15 @@ class VideoSystem {
         if (!production) throw new EmptyValueException("production", production);
         if (!(production instanceof Production)) throw new InvalidAccessConstructorException("production", production);
         // referencia para habilitar el closure en el objeto. En el generador se pierde la referencia this, por lo que hay que guardarla como closure
-        let array = this.directors;
+        let array = this.productions;
         // Los getter no admiten generadores, deben devolver un objeto iterable. [Symbol.iterator]() puede ser generador.
         return {
             *[Symbol.iterator]() {
                 // Recorremos todos los autores menos el de por defecto.
                 for (let i = 1; i < array.length; i++) {
-                    yield array[i];
+                    for (let j = 1; j < array.length; i++) {
+                        yield array[i][j];
+                    }
                 }
             }
         }
@@ -569,3 +571,20 @@ class VideoSystem {
 }
 
 //test
+console.log("Test");
+let act=new Person("Paco","lo","la","10/05/1990","");
+let act2=new Person("Rosa","lo","la","10/05/1990","");
+let act3=new Person("Lis","lo","la","10/05/1990","");
+let dir=new Person("Mac","lo","la","10/05/1980","");
+let dir2=new Person("Rocky","lo","la","10/05/1980","");
+let user=new Person("Lu","lo","la","10/05/1980","");
+let cat=new Category();
+let prod =new Production();
+let v=new VideoSystem("Video",user);
+
+export {BaseException,
+	InvalidAccessConstructorException,
+	EmptyValueException,
+	ParameterValidationException,
+	InvalidValueException,
+	AbstractClassException };
