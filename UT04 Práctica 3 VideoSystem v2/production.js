@@ -247,15 +247,16 @@ class VideoSystem {
         }
     }
     //añade una categoria a la lista
-    addCatecogy(category) {
-        if (!category) throw new EmptyValueException("categories", categories);
-        if (!(category instanceof Category)) throw new InvalidAccessConstructorException("categories", categories);
-        let categ = [ // Array contiene objeto literal con la categoría y un array con las imágenes de esa categoría
+    addCatecogy(catego) {
+        if (!catego) throw new EmptyValueException("catego", catego);
+        if (!(catego instanceof Category)) throw new InvalidAccessConstructorException("catego", catego);
+       /* let categ = [ // Array contiene objeto literal con la categoría y un array con las imágenes de esa categoría
             {
-                category: category,
+                category: catego,
                 production: [] // El array contiene las referencias al objeto production
             }
-        ];
+        ];*/
+        let categ =[catego,[]];
         this.categories.push(categ);
         return this.categories.length;
     }
@@ -265,7 +266,7 @@ class VideoSystem {
         let index = 0;
         //busca el nombre del curso a borrar
         while (index < this.categories.length && borrado == false) {
-            if (this.categories[index].category == category.category) {
+            if (this.categories[index][0].Name == category.Name) {
                 this.categories.splice(index, 1);
                 borrado = true;
             }
@@ -333,7 +334,7 @@ class VideoSystem {
         if (!production) throw new EmptyValueException("production", production);
         if (!(production instanceof Production)) throw new InvalidAccessConstructorException("production", production);
         for (let index = 0; index < this.productions.length; index++) {
-            if (this.productions[index].Name == production.Name) throw new InvalidValueException("production", production);
+            if (this.productions[index].Title == production.Title) throw new InvalidValueException("production", production);
         }
         this.productions.push(production);
         return this.productions.length;
@@ -448,32 +449,37 @@ class VideoSystem {
         if (!(category instanceof Category)) throw new InvalidAccessConstructorException("category", category);
         let l = 0;
         let exis = false;
+        let pos=0;
         while (l < this.categories.length && exis == false) {
-            if (this.categories[l].Name == category.Name) {
+            if (this.categories[l][0].Name == category.Name) {
+                
                 exis = true;
+                pos=l;
             }
             l++;
         }
-        if (exis) {
+        if (!exis) {
             this.addCatecogy(category);
+            pos=this.categories.length-1;
         }
         let existe = false;
         let index = 0;
         let j = 0;
         let cont = 0;
         if (production instanceof Array) {
-            while (index < this.productions.length && existe == false) {
-                cont = 0;
-                while (j < production.length && existe == false) {
-                    if (!(production[i] instanceof Production)) throw new InvalidAccessConstructorException("production", production);
-                    if (this.productions[index] == production[j]) {
-                        cont++;
+            while (index < production.length) {
+                existe=false;
+                if (!(production[index] instanceof Production)) throw new InvalidAccessConstructorException("production", production);
+                while (j < this.productions.length && existe == false) {
+                    if (production[index] == this.productions[j]) {
+                        existe=true;
                     }
                     j++;
                 }
-                if (cont == 0) {
-                    this.addProduction(production);
+                if (!existe) {
+                    this.addProduction(production[index]);
                 }
+                this.categories[pos][1].push(production[index]);
                 index++;
             }
         } else {
@@ -487,6 +493,8 @@ class VideoSystem {
             if (cont == 0) {
                 this.addProduction(production);
             }
+           //console.log(this.categories[pos][1]) ;
+           this.categories[pos][1].push(production);
         }
         return this.categories.length;
     }
@@ -623,9 +631,12 @@ let user2 = new User("Mi", "lum@gmail.com", "12345678");
 //let user3=new User("Lu","lu@gmail.com","12345678");//error el correo
 
 let cat = new Category("accion", "accionada");
-let cat2 = new Category("accion", "accionada");
+let cat2 = new Category("Romamce", "accionada");
 
 let prod = new Production("Las llamas", "Español", "20/03/2010", "fuego", "a");
+let prod2 = new Production("Sparta", "Español", "20/03/2010", "esto es esparta", "a");
+let prod3 = new Production("Mellizos", "Español", "20/03/2010", "o gemelos?", "a");
+
 let v = new VideoSystem("Video", user, prod, cat, act, dir);
 console.log(v.addActor(act2));
 console.log(v.addUser(user2));
@@ -639,7 +650,9 @@ console.log(v.actors);
 console.log(v.directors);
 console.log(v.assignCategory(cat, prod));
 console.log(v.categories);
-
+let prods=[prod2,prod3];
+console.log(v.assignCategory(cat2, prods));
+console.log(v.categories);
 console.log(v.assignActor(act, prod));
 console.log(v.assignDirector(dir, prod));
 
