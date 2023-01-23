@@ -201,12 +201,7 @@ class VideoSystem {
     Name;
     users = [];
     productions = [];
-    categories = [ // Array contiene objeto literal con la categoría y un array con las imágenes de esa categoría
-        {
-            category: "",
-            production: [] // El array contiene las referencias al objeto production
-        }
-    ];
+    categories = [];
     actors = [];
     directors = [];
     constructor(name, user, production, categori, actor, director) {
@@ -255,7 +250,13 @@ class VideoSystem {
     addCatecogy(category) {
         if (!category) throw new EmptyValueException("categories", categories);
         if (!(category instanceof Category)) throw new InvalidAccessConstructorException("categories", categories);
-        this.categories.push(category);
+        let categ = [ // Array contiene objeto literal con la categoría y un array con las imágenes de esa categoría
+            {
+                category: category,
+                production: [] // El array contiene las referencias al objeto production
+            }
+        ];
+        this.categories.push(categ);
         return this.categories.length;
     }
 
@@ -446,10 +447,14 @@ class VideoSystem {
 
         if (!(category instanceof Category)) throw new InvalidAccessConstructorException("category", category);
         let l = 0;
-        while (l < this.categories.length) {
+        let exis = false;
+        while (l < this.categories.length && exis == false) {
+            if (this.categories[l].Name == category.Name) {
+                exis = true;
+            }
             l++;
         }
-        if (l == this.categories.length) {
+        if (exis) {
             this.addCatecogy(category);
         }
         let existe = false;
@@ -632,7 +637,11 @@ console.log(v.productions);
 console.log(v.categories);
 console.log(v.actors);
 console.log(v.directors);
-console.log(v.assignCategory(cat,prod));
+console.log(v.assignCategory(cat, prod));
+console.log(v.categories);
+
+console.log(v.assignActor(act, prod));
+console.log(v.assignDirector(dir, prod));
 
 export {
     BaseException,
