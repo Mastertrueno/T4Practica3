@@ -73,6 +73,7 @@ class Production {
     Image;
 
     constructor(title, nacionality, publication, synopsis, image) {
+        if(new.target === Production) throw new Error("Production is an abstract class.");
         if (!title) throw new EmptyValueException("title", title);
         if (!publication) throw new EmptyValueException("publication", publication);
         if (!/^(?:3[01]|[12][0-9]|0?[1-9])([\-/.])(0?[1-9]|1[1-2])\1\d{4}$/.test(publication)) throw InvalidValueException("publication", publication);
@@ -83,29 +84,31 @@ class Production {
         this.Image = image;
     }
 }
-class Movie {
+class Movie extends Production{
     Resource;
     Locations;
 
-    constructor(resource, locations) {
+    constructor(title, nacionality, publication, synopsis, image,resource, locations) {
+        super(title, nacionality, publication, synopsis, image);
         if (!resource) throw new EmptyValueException("resource", resource);
         if (!locations) throw new EmptyValueException("locations", locations);
         if (!(resource instanceof (Resource))) throw new InvalidAccessConstructorException("resource", resource);
-        if (!(locations instanceof (Coords))) throw new InvalidAccessConstructorException("locations", locations);
+        if (!(locations instanceof (Coordinate))) throw new InvalidAccessConstructorException("locations", locations);
         this.Resource = resource;
         this.Locations = locations;
     }
 }
 
-class Serie {
+class Serie extends Production{
     Resource;
     Locations;
     Seasons;
-    constructor(resource, locations, seasons) {
+    constructor(title, nacionality, publication, synopsis, image,resource, locations, seasons) {
+        super(title, nacionality, publication, synopsis, image);
         if (!resource) throw new EmptyValueException("resource", resource);
         if (!locations) throw new EmptyValueException("locations", locations);
         if (!(resource instanceof Resource)) throw new InvalidAccessConstructorException("resource", resource);
-        if (!(locations instanceof Coords)) throw new InvalidAccessConstructorException("locations", locations);
+        if (!(locations instanceof Coordinate)) throw new InvalidAccessConstructorException("locations", locations);
         if (!seasons) throw new EmptyValueException("seasons", seasons);
         if (Number.isNaN(seasons)) throw new InvalidValueException("seasons", seasons);
         this.Resource = resource;
@@ -132,8 +135,8 @@ class User {
     }
 }
 
-// Objeto Coords para definir coordenadas.
-class Coords {
+// Objeto Coordinate para definir coordenadas.
+class Coordinate {
     #latitude;
     #longitude;
 
@@ -233,7 +236,7 @@ class VideoSystem {
         this.Name = value;
         return "Nombre cambiado";
     }
-    get categories() {
+    get category() {
         // referencia para habilitar el closure en el objeto. En el generador se pierde la referencia this, por lo que hay que guardarla como closure
         let array = this.categories;
         // Los getter no admiten generadores, deben devolver un objeto iterable. [Symbol.iterator]() puede ser generador.
@@ -241,7 +244,7 @@ class VideoSystem {
             *[Symbol.iterator]() {
                 // Recorremos todos los autores menos el de por defecto.
                 for (let i = 1; i < array.length; i++) {
-                    yield array[i];
+                    yield array[i][0];
                 }
             }
         }
@@ -952,10 +955,13 @@ let user2 = new User("Mi", "lum@gmail.com", "12345678");
 
 let cat = new Category("accion", "accionada");
 let cat2 = new Category("Romamce", "accionada");
+let r=new Resource(59,"lod");
+let c=new Coordinate(48,70);
+let prod = new Movie("Las llamas", "Español", "20/03/2010", "fuego", "a",r,c);
+let prod2 = new Movie("Sparta", "Español", "20/03/2010", "esto es esparta", "a",r,c);
+let prod3 = new Serie("Mellizos", "Español", "20/03/2010", "o gemelos?", "a",r,c,8);
+//let prod4 = new Production("Mellizos", "Español", "20/03/2010", "o gemelos?", "a");//da error de abstracto
 
-let prod = new Production("Las llamas", "Español", "20/03/2010", "fuego", "a");
-let prod2 = new Production("Sparta", "Español", "20/03/2010", "esto es esparta", "a");
-let prod3 = new Production("Mellizos", "Español", "20/03/2010", "o gemelos?", "a");
 
 let v = new VideoSystem("Video", user, prod, cat, act, dir);
 console.log("Insercion de datos");
@@ -1002,7 +1008,7 @@ console.log(v.deassignActor(act, prod));
 console.log(v.directors);
 console.log(v.deassignActor(act2, prods));
 console.log(v.directors);
-
+console.log(v.category);
 export {
     BaseException,
     InvalidAccessConstructorException,
