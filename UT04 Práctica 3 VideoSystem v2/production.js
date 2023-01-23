@@ -9,9 +9,9 @@ import {
     AbstractClassException
 } from './BaseException.js';
 //Excepción valor ya existente
-class ExistingValueException extends BaseException {
+class ExistetingValueException extends BaseException {
     constructor(param, fileName, lineNumber) {
-        super("The value " + param + " already exist", fileName, lineNumber);
+        super("The value " + param + " already existet", fileName, lineNumber);
         this.name = "InvalidAccessConstructorException";
     }
 }
@@ -451,23 +451,23 @@ class VideoSystem {
 
         if (!(category instanceof Category)) throw new InvalidAccessConstructorException("category", category);
         let l = 0;
-        let exis = false;
+        let existe = false;
         let pos = 0;
         //compruebo si la categoria existe
-        while (l < this.categories.length && exis == false) {
+        while (l < this.categories.length && existe == false) {
             if (this.categories[l][0].Name == category.Name) {
                 //si existe guardo su posicion
-                exis = true;
+                existe = true;
                 pos = l;
             }
             l++;
         }
         //la añado si no lo hace
-        if (!exis) {
+        if (!existe) {
             this.addCatecogy(category);
             pos = this.categories.length - 1;
         }
-        let existe = false;
+         existe = false;
         let index = 0;
         let j = 0;
         let cont = 0;
@@ -499,12 +499,12 @@ class VideoSystem {
             //compruebo si existe
             while (index < this.categories.length && existe == false) {
                 if (!(this.productions[index] == production)) {
-                    exis=true;
+                    existe=true;
                 }
                 index++;
             }
             //si no  existe se añade
-            if (!exis) {
+            if (!existe) {
                 this.addProduction(production);
             }
             //console.log(this.categories[pos][1]) ;
@@ -518,20 +518,20 @@ class VideoSystem {
         if (!production) throw new EmptyValueException("production", production);
         if (!(category instanceof Category)) throw new InvalidAccessConstructorException("category", category);
         let l = 0;
-        let exis = false;
+        let existe = false;
         let pos = 0;
         //compruebo si la categoria existe
-        while (l < this.categories.length && exis == false) {
+        while (l < this.categories.length && existe == false) {
             if (this.categories[l][0].Name == category.Name) {
                 //si existe guardo su posicion
-                exis = true;
+                existe = true;
                 pos = l;
             }
             l++;
         }
         //error si no existe
-        if (!exis) throw new InvalidValueException("category", category);
-        let existe = false;
+        if (!existe) throw new InvalidValueException("category", category);
+         existe = false;
         let index = 0;
         let j = 0;
         let cont = 0;
@@ -562,16 +562,16 @@ class VideoSystem {
             //compruebo que el dato es valido
             if (!(production instanceof Production)) throw new InvalidAccessConstructorException("production", production);
             //compruebo si existe
-            exis=false;
+            existe=false;
             index=0;
             while (index < this.categories.length && existe == false) {
                 if ((this.productions[index] == production)) {
-                    exis=true;
+                    existe=true;
                 }
                 index++;
             }
             //si existe se añade
-            if (!exis) {
+            if (!existe) {
                 this.addProduction(production);
             }
             //console.log(this.categories[pos][1]) ;
@@ -579,7 +579,7 @@ class VideoSystem {
             cont=0;
             while (index < this.categories.length && existe == false) {
                 if ((this.categories[pos][1][index].Title == production.Title)) {
-                    exis=true;
+                    existe=true;
                     cont=index;
                 }
                 index++;
@@ -594,23 +594,23 @@ class VideoSystem {
         if (!production) throw new EmptyValueException("production", production);
         if (!(person instanceof Person)) throw new InvalidAccessConstructorException("person", person);
         let l = 0;
-        let exis = false;
+        let existe = false;
         let pos = 0;
         //compruebo si la categoria existe
-        while (l < this.directors.length && exis == false) {
+        while (l < this.directors.length && existe == false) {
             if (this.directors[l][0].Name == person.Name) {
                 //si existe guardo su posicion
-                exis = true;
+                existe = true;
                 pos = l;
             }
             l++;
         }
         //la añado si no lo hace
-        if (!exis) {
+        if (!existe) {
             this.addDirector(person);
             pos = this.categories.length - 1;
         }
-        let existe = false;
+         existe = false;
         let index = 0;
         let j = 0;
         let cont = 0;
@@ -659,35 +659,101 @@ class VideoSystem {
         if (!person) throw new EmptyValueException("person", person);
         if (!production) throw new EmptyValueException("production", production);
         if (!(person instanceof Person)) throw new InvalidAccessConstructorException("person", person);
-        if (!(production instanceof Production)) throw new InvalidAccessConstructorException("production", production);
+        let l = 0;
         let existe = false;
-        let index = 0;
-        while (index < this.categories.length && existe == false) {
-            index++;
+        let pos = 0;
+        //compruebo si la categoria existe
+        while (l < this.directors.length && existe == false) {
+            if (this.directors[l][0].Name == person.Name) {
+                //si existe guardo su posicion
+                existe = true;
+                pos = l;
+            }
+            l++;
         }
+        //error si no existe
+        if (!existe) throw new InvalidValueException("category", category);
+         existe = false;
+        let index = 0;
+        let j = 0;
+        let cont = 0;
+        //si es un array de producciones
+        if (production instanceof Array) {
+            //mientras no se llegue al final del array dado
+            while (index < production.length) {
+                existe = false;
+                //compruebo que cada dato del array es valido
+                if (!(production[index] instanceof Production)) throw new InvalidAccessConstructorException("production", production);
+                //compara el productions con cada elemento del array dado
+                while (j < this.directors.length && existe == false) {
+                    if (production[index] == this.directors[pos][1][j]) {
+                        existe = true;
+                        cont=j;
+                    }
+                    j++;
+                }
+                //si no existe se ignora
+                if (existe) {
+                    //se borra la produccion correspondiente
+                    this.directors[pos][1].splice(cont,1);
+                }
+                j = 0;
+                index++;
+            }
+        } else {//si es solo una produccion
+            //compruebo que el dato es valido
+            if (!(production instanceof Production)) throw new InvalidAccessConstructorException("production", production);
+            //compruebo si existe
+            existe=false;
+            index=0;
+            while (index < this.directors.length && existe == false) {
+                if ((this.productions[index] == production)) {
+                    existe=true;
+                }
+                index++;
+            }
+            //si existe se añade
+            if (!existe) {
+                this.addProduction(production);
+            }
+            //console.log(this.directors[pos][1]) ;
+            index=0;
+            cont=0;
+            
+            while (index < this.directors.length && existe == false) {
+                console.log(this.directors[pos][1][index]);
+                if ((this.directors[pos][1][index].Title == production.Title)) {
+                    existe=true;
+                    cont=index;
+                }
+                index++;
+            }
+            this.directors[pos][1].splice(cont,1);
+        }
+        return this.directors[pos].length;
     }
     assignActor(person, production) {
         if (!person) throw new EmptyValueException("person", person);
         if (!production) throw new EmptyValueException("production", production);
         if (!(person instanceof Person)) throw new InvalidAccessConstructorException("person", person);
         let l = 0;
-        let exis = false;
+        let existe = false;
         let pos = 0;
         //compruebo si la categoria existe
-        while (l < this.actors.length && exis == false) {
+        while (l < this.actors.length && existe == false) {
             if (this.actors[l][0].Name == person.Name) {
                 //si existe guardo su posicion
-                exis = true;
+                existe = true;
                 pos = l;
             }
             l++;
         }
         //la añado si no lo hace
-        if (!exis) {
+        if (!existe) {
             this.addDirector(person);
             pos = this.categories.length - 1;
         }
-        let existe = false;
+         existe = false;
         let index = 0;
         let j = 0;
         let cont = 0;
@@ -736,12 +802,76 @@ class VideoSystem {
         if (!person) throw new EmptyValueException("person", person);
         if (!production) throw new EmptyValueException("production", production);
         if (!(person instanceof Person)) throw new InvalidAccessConstructorException("person", person);
-        if (!(production instanceof Production)) throw new InvalidAccessConstructorException("production", production);
+        let l = 0;
         let existe = false;
-        let index = 0;
-        while (index < this.categories.length && existe == false) {
-            index++;
+        let pos = 0;
+        //compruebo si la categoria existe
+        while (l < this.actors.length && existe == false) {
+            if (this.actors[l][0].Name == person.Name) {
+                //si existe guardo su posicion
+                existe = true;
+                pos = l;
+            }
+            l++;
         }
+        //error si no existe
+        if (!existe) throw new InvalidValueException("person", person);
+         existe = false;
+        let index = 0;
+        let j = 0;
+        let cont = 0;
+        //si es un array de producciones
+        if (production instanceof Array) {
+            //mientras no se llegue al final del array dado
+            while (index < production.length) {
+                existe = false;
+                //compruebo que cada dato del array es valido
+                if (!(production[index] instanceof Production)) throw new InvalidAccessConstructorException("production", production);
+                //compara el productions con cada elemento del array dado
+                while (j < this.actors.length && existe == false) {
+                    if (production[index] == this.actors[pos][1][j]) {
+                        existe = true;
+                        cont=j;
+                    }
+                    j++;
+                }
+                //si no existe se ignora
+                if (existe) {
+                    //se borra la produccion correspondiente
+                    this.actors[pos][1].splice(cont,1);
+                }
+                j = 0;
+                index++;
+            }
+        } else {//si es solo una produccion
+            //compruebo que el dato es valido
+            if (!(production instanceof Production)) throw new InvalidAccessConstructorException("production", production);
+            //compruebo si existe
+            existe=false;
+            index=0;
+            while (index < this.actors.length && existe == false) {
+                if ((this.productions[index] == production)) {
+                    existe=true;
+                }
+                index++;
+            }
+            //si existe se añade
+            if (!existe) {
+                this.addProduction(production);
+            }
+            //console.log(this.actors[pos][1]) ;
+            index=0;
+            cont=0;
+            while (index < this.actors.length && existe == false) {
+                if ((this.actors[pos][1][index].Title == production.Title)) {
+                    existe=true;
+                    cont=index;
+                }
+                index++;
+            }
+            this.actors[pos][1].splice(cont,1);
+        }
+        return this.actors[pos].length;
     }
 
     getCast(production) {
@@ -771,7 +901,7 @@ class VideoSystem {
             *[Symbol.iterator]() {
                 // Recorremos todos los autores menos el de por defecto.
                 for (let i = 1; i < array.length; i++) {
-                    yield array[i];
+                    yield array[i][j];
                 }
             }
         }
@@ -828,6 +958,7 @@ let prod2 = new Production("Sparta", "Español", "20/03/2010", "esto es esparta"
 let prod3 = new Production("Mellizos", "Español", "20/03/2010", "o gemelos?", "a");
 
 let v = new VideoSystem("Video", user, prod, cat, act, dir);
+console.log("Insercion de datos");
 console.log(v.addActor(act2));
 console.log(v.addUser(user2));
 console.log(v.addCatecogy(cat2));
@@ -838,6 +969,7 @@ console.log(v.productions);
 
 console.log(v.actors);
 console.log(v.directors);
+console.log("Categorias");
 console.log(v.categories);
 console.log(v.assignCategory(cat, prod));
 console.log(v.categories);
@@ -851,16 +983,25 @@ console.log(v.assignCategory(cat2, prod2));
 console.log(v.categories);
 console.log(v.deassignCategory(cat2, prods));
 console.log(v.categories);
-
+console.log("Directores");
 console.log(v.assignDirector(dir, prod));
 console.log(v.directors);
 console.log(v.assignDirector(dir2, prods));
 console.log(v.directors);
+console.log(v.deassignDirector(dir, prod));
+console.log(v.directors);
+console.log(v.deassignDirector(dir2, prods));
+console.log(v.directors);
 //console.log(v.categories[1][1][1]);
+console.log("Actores");
 console.log(v.assignActor(act, prod));
 console.log(v.actors);
 console.log(v.assignActor(act2, prods));
 console.log(v.actors);
+console.log(v.deassignActor(act, prod));
+console.log(v.directors);
+console.log(v.deassignActor(act2, prods));
+console.log(v.directors);
 
 export {
     BaseException,
