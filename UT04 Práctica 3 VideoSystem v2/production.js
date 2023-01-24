@@ -8,13 +8,6 @@ import {
     InvalidValueException,
     AbstractClassException
 } from './BaseException.js';
-//Excepción valor ya existente
-class ExistetingValueException extends BaseException {
-    constructor(param, fileName, lineNumber) {
-        super("The value " + param + " already existet", fileName, lineNumber);
-        this.name = "InvalidAccessConstructorException";
-    }
-}
 //objeto persona
 class Person {
     Name;
@@ -50,6 +43,9 @@ class Category {
         this.Name = name;
         this.Description = description;
     }
+    toString() {
+        return this.constructor.Name + " " +this.description;
+    }
 }
 
 class Resource {
@@ -62,6 +58,9 @@ class Resource {
         if (!link) throw new EmptyValueException("link", link);
         this.Duration = duration;
         this.Link = link;
+    }
+    toString() {
+        return this.constructor.Duration + " " +this.Link;
     }
 }
 
@@ -83,6 +82,7 @@ class Production {
         this.Synopsis = synopsis;
         this.Image = image;
     }
+    
 }
 class Movie extends Production {
     Resource;
@@ -96,6 +96,9 @@ class Movie extends Production {
         if (!(locations instanceof (Coordinate))) throw new InvalidAccessConstructorException("locations", locations);
         this.Resource = resource;
         this.Locations = locations;
+    }
+    toString() {
+        return this.constructor.title + " " +this.Resource+ " " +this.Locations;
     }
 }
 
@@ -881,14 +884,19 @@ class VideoSystem {
         if (!production) throw new EmptyValueException("production", production);
         if (!(production instanceof Production)) throw new InvalidAccessConstructorException("production", production);
         // referencia para habilitar el closure en el objeto. En el generador se pierde la referencia this, por lo que hay que guardarla como closure
-        let array = this.#productions;
+        let array = this.#actors;
         // Los getter no admiten generadores, deben devolver un objeto iterable. [Symbol.iterator]() puede ser generador.
         return {
             *[Symbol.iterator]() {
-                // Recorremos todos los autores menos el de por defecto.
+                //digo para que pelicula trabajaron los actores
+                console.log("Para " + production.Title + " trabajaron ")
+                // Recorremos todos los actores.
                 for (let i = 0; i < array.length; i++) {
-                    for (let j = 1; j < array.length; i++) {
-                        yield array[i][j];
+                    //si en la produccion esta la dada se muestra el actor
+                    for (let index = 0; index < array[i][1].length; index++) {
+                        if (array[i][1][index] == production) {
+                            yield array[i][0];
+                        }
                     }
                 }
             }
@@ -902,9 +910,16 @@ class VideoSystem {
         // Los getter no admiten generadores, deben devolver un objeto iterable. [Symbol.iterator]() puede ser generador.
         return {
             *[Symbol.iterator]() {
-                // Recorremos todos los autores menos el de por defecto.
+                //digo para que pelicula trabajaron los actores
+                console.log("Para " + production.Title + " trabajaron ")
+                // Recorremos todos los actores.
                 for (let i = 0; i < array.length; i++) {
-                    yield array[i][j];
+                    //si en la produccion esta la dada se muestra el actor
+                    for (let index = 0; index < array[i][1].length; index++) {
+                        if (array[i][1][index] == production) {
+                            yield array[i][0];
+                        }
+                    }
                 }
             }
         }
@@ -984,6 +999,7 @@ for (const iterator of ac) {
 for (const iterator of di) {
     console.log(iterator);
 }
+//categorias
 console.log("Categorias");
 for (const iterator of ca) {
     console.log(iterator);
@@ -1010,6 +1026,7 @@ console.log(v.deassignCategory(cat2, prods));
 for (const iterator of ca) {
     console.log(iterator);
 }
+//directores
 console.log("Directores");
 console.log(v.assignDirector(dir, prod));
 for (const iterator of di) {
@@ -1027,6 +1044,7 @@ console.log(v.deassignDirector(dir2, prods));
 for (const iterator of di) {
     console.log(iterator);
 }//console.log(v.#categories[1][1][1]);
+//actores
 console.log("Actores");
 console.log(v.assignActor(act, prod));
 for (const iterator of ac) {
@@ -1044,7 +1062,11 @@ console.log(v.deassignActor(act2, prods));
 for (const iterator of ac) {
     console.log(iterator);
 }
-
+console.log(v.assignActor(act2, prods));
+console.log(v.assignActor(act, prod2));
+for (const iterator of v.getCast(prod2)) {
+    console.log(iterator);
+}
 
 
 export {
