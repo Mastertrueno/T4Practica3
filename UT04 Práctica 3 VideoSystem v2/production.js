@@ -32,7 +32,7 @@ class Person {
         return this.constructor.Name + " " + this.Lastname1 + " " + this.Lastname2 + " nacido en " + this.Born + " " + this.Picture;
     }
 }
-
+//clase categoria
 class Category {
     Name;
     Description;
@@ -47,7 +47,7 @@ class Category {
         return this.constructor.Name + " " + this.description;
     }
 }
-
+//clase resource
 class Resource {
     Duration;
     Link;
@@ -63,7 +63,7 @@ class Resource {
         return this.constructor.Duration + " " + this.Link;
     }
 }
-
+//clase produccion abstracta
 class Production {
     Title;
     Nacionality;
@@ -84,6 +84,7 @@ class Production {
     }
 
 }
+//clase movie que hereda de produccion
 class Movie extends Production {
     Resource;
     Locations;
@@ -101,7 +102,7 @@ class Movie extends Production {
         return this.constructor.title + " " + this.Resource + " " + this.Locations;
     }
 }
-
+//clase serie que hereda de produccion
 class Serie extends Production {
     Resource;
     Locations;
@@ -202,778 +203,797 @@ class Coordinate {
     }
 
 }
+//singleton videosystem
+let VideoSystem = (
+    function () {
+        let instantiated;
+        function init() {
+            //clase principar
+            class VideoSystem {
+                Name;
+                #users = [];
+                #productions = [];
+                #categories = [];
+                #actors = [];
+                #directors = [];
+                constructor(name) {
+                    //compruebo que no estan vacios y que son del objeto deseado
+                    if (!name) throw new EmptyValueException("name", name);
+                    this.Name = name;
 
-class VideoSystem {
-    Name;
-    #users = [];
-    #productions = [];
-    #categories = [];
-    #actors = [];
-    #directors = [];
-    constructor(name, user, production, categori, actor, director) {
-        //compruebo que no estan vacios y que son del objeto deseado
-        if (!name) throw new EmptyValueException("name", name);
-        if (!user) throw new EmptyValueException("user", user);
-        if (!(user instanceof User)) throw new InvalidAccessConstructorException("user", user);
-        if (!production) throw new EmptyValueException("production", production);
-        if (!(production instanceof Production)) throw new InvalidAccessConstructorException("production", production);
-        if (!categori) throw new EmptyValueException("categori", categori);
-        if (!(categori instanceof Category)) throw new InvalidAccessConstructorException("categori", categori);
-        if (!actor) throw new EmptyValueException("actor", actor);
-        if (!(actor instanceof Person)) throw new InvalidAccessConstructorException("actor", actor);
-        if (!director) throw new EmptyValueException("director", director);
-        if (!(director instanceof Person)) throw new InvalidAccessConstructorException("director", director);
-
-        this.Name = name;
-        this.addUser(user);
-        this.addProduction(production);
-        this.addCatecogy(categori);
-        this.addActor(actor);
-        this.addDirector(director);
-    }
-    get name() {
-        return this.Name;
-    }
-    set name(value) {
-        if (!value) throw new InvalidValueException("nombre", value);
-        this.Name = value;
-        return "Nombre cambiado";
-    }
-    get categories() {
-        // referencia para habilitar el closure en el objeto. En el generador se pierde la referencia this, por lo que hay que guardarla como closure
-        let array = this.#categories;
-        // Los getter no admiten generadores, deben devolver un objeto iterable. [Symbol.iterator]() puede ser generador.
-        return {
-            *[Symbol.iterator]() {
-                // Recorremos todos los autores menos el de por defecto.
-                for (let i = 0; i < array.length; i++) {
-                    yield array[i];
                 }
-            }
-        }
-    }
-    //añade una categoria a la lista
-    addCatecogy(catego) {
-        if (!catego) throw new EmptyValueException("catego", catego);
-        if (!(catego instanceof Category)) throw new InvalidAccessConstructorException("catego", catego);
-        /* let categ = [ // Array contiene objeto literal con la categoría y un array con las imágenes de esa categoría
-             {
-                 category: catego,
-                 production: [] // El array contiene las referencias al objeto production
-             }
-         ];*/
-        let categ = [catego, []];
-        this.#categories.push(categ);
-        return this.#categories.length;
-    }
-
-    removeCategory(category) {
-        if (!category) throw new EmptyValueException("category", category);
-        if (!(category instanceof Category)) throw new InvalidAccessConstructorException("category", category);
-        let borrado = false;
-        let index = 0;
-        //busca el nombre del curso a borrar
-        while (index < this.#categories.length && borrado == false) {
-            if (this.#categories[index][0] == category) {
-                this.#categories.splice(index, 1);
-                borrado = true;
-            }
-            index++;
-        }
-        if (borrado) {
-            return this.#categories.length;
-        } else throw new InvalidValueException("category", category);
-    }
-
-    get users() {
-        // referencia para habilitar el closure en el objeto. En el generador se pierde la referencia this, por lo que hay que guardarla como closure
-        let array = this.#users;
-        // Los getter no admiten generadores, deben devolver un objeto iterable. [Symbol.iterator]() puede ser generador.
-        return {
-            *[Symbol.iterator]() {
-                // Recorremos todos los autores menos el de por defecto.
-                for (let i = 0; i < array.length; i++) {
-                    yield array[i];
+                get name() {
+                    return this.Name;
                 }
-            }
-        }
-    }
-    addUser(user) {
-        if (!user) throw new EmptyValueException("user", user);
-        if (!(user instanceof User)) throw new InvalidAccessConstructorException("user", user);
-        for (let index = 0; index < this.#users.length; index++) {
-            if (this.#users[index].Username == user.Username) throw new InvalidValueException("user", user);
-            if (this.#users[index].Email == user.Email) throw new InvalidValueException("user", user);
-        }
-        this.#users.push(user);
-        return this.#users.length;
-    }
-    removeUser(user) {
-        if (!user) throw new EmptyValueException("user", user);
-        if (!(user instanceof User)) throw new InvalidAccessConstructorException("user", user);
-        let borrado = false;
-        let index = 0;
-        //busca el nombre del curso a borrar
-        while (index < this.#users.length && borrado == false) {
-            if (this.#users[index][0] == user) {
-                this.#users.splice(index, 1);
-                borrado = true;
-            }
-            index++;
-        }
-        if (borrado) {
-            return this.#users.length;
-        } else throw new InvalidValueException("user", user);
-    }
-    get productions() {
-        // referencia para habilitar el closure en el objeto. En el generador se pierde la referencia this, por lo que hay que guardarla como closure
-        let array = this.#productions;
-        // Los getter no admiten generadores, deben devolver un objeto iterable. [Symbol.iterator]() puede ser generador.
-        return {
-            *[Symbol.iterator]() {
-                // Recorremos todos los autores menos el de por defecto.
-                for (let i = 0; i < array.length; i++) {
-                    yield array[i];
+                 name(value) {
+                    if (!value) throw new InvalidValueException("nombre", value);
+                    this.Name = value;
+                    return "Nombre cambiado";
                 }
-            }
-        }
-    }
-    addProduction(production) {
-        if (!production) throw new EmptyValueException("production", production);
-        if (!(production instanceof Production)) throw new InvalidAccessConstructorException("production", production);
-        for (let index = 0; index < this.#productions.length; index++) {
-            if (this.#productions[index].Title == production.Title) throw new InvalidValueException("production", production);
-        }
-        this.#productions.push(production);
-        return this.#productions.length;
-    }
-    removeProduction(production) {
-        if (!production) throw new EmptyValueException("production", production);
-        if (!(production instanceof Production)) throw new InvalidAccessConstructorException("production", production);
-        let borrado = false;
-        let index = 0;
-        //busca el nombre del curso a borrar
-        while (index < this.#productions.length && borrado == false) {
-            if (this.#productions[index][0] == production) {
-                this.#productions.splice(index, 1);
-                borrado = true;
-            }
-            index++;
-        }
-        if (borrado) {
-            return this.production.length;
-        } else throw new InvalidValueException("production", production);
-    }
-    //getter de actores
-    get actors() {
-        // referencia para habilitar el closure en el objeto. En el generador se pierde la referencia this, por lo que hay que guardarla como closure
-        let array = this.#actors;
-        // Los getter no admiten generadores, deben devolver un objeto iterable. [Symbol.iterator]() puede ser generador.
-        return {
-            *[Symbol.iterator]() {
-                // Recorremos todos los autores menos el de por defecto.
-                for (let i = 0; i < array.length; i++) {
-                    yield array[i];
-                }
-            }
-        }
-    }
-    //funcion que añade un actor a la lista
-    addActor(actor) {
-        //compruebo que es valido
-        if (!actor) throw new EmptyValueException("actor", actor);
-        if (!(actor instanceof Person)) throw new InvalidAccessConstructorException("actor", actor);
-        for (let index = 0; index < this.#actors.length; index++) {
-            if (this.#actors[index] == actor) throw new InvalidValueException("actor", actor);
-        }
-        let acto = [actor, []];
-        this.#actors.push(acto);
-        return this.#actors.length;
-    }
-    //funcion que quita un actor de la lista
-    removeActor(actor) {
-        if (!actor) throw new EmptyValueException("actor", actor);
-        if (!(actor instanceof Person)) throw new InvalidAccessConstructorException("actor", actor);
-        let borrado = false;
-        let index = 0;
-        //busca el nombre del curso a borrar
-        while (index < this.#actors.length && borrado == false) {
-            if (this.#actors[index][0] == actor) {
-                this.#actors.splice(index, 1);
-                borrado = true;
-            }
-            index++;
-        }
-        if (borrado) {
-            return this.#actors.length;
-        } else throw new InvalidValueException("actor", actor);
-    }
-    //getter de actores
-    get directors() {
-        // referencia para habilitar el closure en el objeto. En el generador se pierde la referencia this, por lo que hay que guardarla como closure
-        let array = this.#directors;
-        // Los getter no admiten generadores, deben devolver un objeto iterable. [Symbol.iterator]() puede ser generador.
-        return {
-            *[Symbol.iterator]() {
-                // Recorremos todos los autores menos el de por defecto.
-                for (let i = 0; i < array.length; i++) {
-                    yield array[i];
-                }
-            }
-        }
-    }
-    //funcion que añade un actor a la lista
-    addDirector(director) {
-        //compruebo que es valido
-        if (!director) throw new EmptyValueException("director", director);
-        if (!(director instanceof Person)) throw new InvalidAccessConstructorException("director", director);
-        for (let index = 0; index < this.#directors.length; index++) {
-            if (this.#directors[index] == director) throw new InvalidValueException("director", director);
-        }
-        let direc = [director, []];
-        this.#directors.push(direc);
-        return this.#directors.length;
-    }
-    //funcion que quita un actor de la lista
-    removeDirector(director) {
-        if (!director) throw new EmptyValueException("director", director);
-        if (!(director instanceof Person)) throw new InvalidAccessConstructorException("director", director);
-        let borrado = false;
-        let index = 0;
-        //busca el nombre del curso a borrar
-        while (index < this.#directors.length && borrado == false) {
-            if (this.#directors[index][0] == director) {
-                this.#directors.splice(index, 1);
-                borrado = true;
-            }
-            index++;
-        }
-        if (borrado) {
-            return this.#directors.length;
-        } else throw new InvalidValueException("director", director);
-    }
-    assignCategory(category, production) {
-        //compruebo que son validos
-        if (!category) throw new EmptyValueException("category", category);
-        if (!production) throw new EmptyValueException("production", production);
-
-        if (!(category instanceof Category)) throw new InvalidAccessConstructorException("category", category);
-        let l = 0;
-        let existe = false;
-        let pos = 0;
-        //compruebo si la categoria existe
-        while (l < this.#categories.length && existe == false) {
-            if (this.#categories[l][0].Name == category.Name) {
-                //si existe guardo su posicion
-                existe = true;
-                pos = l;
-            }
-            l++;
-        }
-        //la añado si no lo hace
-        if (!existe) {
-            this.addCatecogy(category);
-            pos = this.#categories.length - 1;
-        }
-        existe = false;
-        let index = 0;
-        let j = 0;
-        let cont = 0;
-        //si es un array de producciones
-        if (production instanceof Array) {
-            //mientras no se llegue al final del array dado
-            while (index < production.length) {
-                existe = false;
-                //compruebo que cada dato del array es valido
-                if (!(production[index] instanceof Production)) throw new InvalidAccessConstructorException("production", production);
-                //compara el #productions con cada elemento del array dado
-                while (j < this.#productions.length && existe == false) {
-                    if (production[index] == this.#productions[j]) {
-                        existe = true;
+                get categories() {
+                    // referencia para habilitar el closure en el objeto. En el generador se pierde la referencia this, por lo que hay que guardarla como closure
+                    let array = this.#categories;
+                    // Los getter no admiten generadores, deben devolver un objeto iterable. [Symbol.iterator]() puede ser generador.
+                    return {
+                        *[Symbol.iterator]() {
+                            // Recorremos todos los autores menos el de por defecto.
+                            for (let i = 0; i < array.length; i++) {
+                                yield array[i];
+                            }
+                        }
                     }
-                    j++;
                 }
-                //si no existe se añade
-                if (!existe) {
-                    this.addProduction(production[index]);
+                //añade una categoria a la lista
+                addCatecogy(catego) {
+                    if (!catego) throw new EmptyValueException("catego", catego);
+                    if (!(catego instanceof Category)) throw new InvalidAccessConstructorException("catego", catego);
+                    /* let categ = [ // Array contiene objeto literal con la categoría y un array con las imágenes de esa categoría
+                         {
+                             category: catego,
+                             production: [] // El array contiene las referencias al objeto production
+                         }
+                     ];*/
+                    let categ = [catego, []];
+                    this.#categories.push(categ);
+                    return this.#categories.length;
                 }
-                //se asigna a la categoria correspondiente
-                this.#categories[pos][1].push(production[index]);
-                index++;
-            }
-        } else {//si es solo una produccion
-            //compruebo que el dato es valido
-            if (!(production instanceof Production)) throw new InvalidAccessConstructorException("production", production);
-            //compruebo si existe
-            while (index < this.#categories.length && existe == false) {
-                if (!(this.#productions[index] == production)) {
-                    existe = true;
-                }
-                index++;
-            }
-            //si no  existe se añade
-            if (!existe) {
-                this.addProduction(production);
-            }
-            //console.log(this.#categories[pos][1]) ;
-            //se añade a la categoria correspondiente
-            this.#categories[pos][1].push(production);
-        }
-        return this.#categories[pos].length;
-    }
-    deassignCategory(category, production) {
-        if (!category) throw new EmptyValueException("category", category);
-        if (!production) throw new EmptyValueException("production", production);
-        if (!(category instanceof Category)) throw new InvalidAccessConstructorException("category", category);
-        let l = 0;
-        let existe = false;
-        let pos = 0;
-        //compruebo si la categoria existe
-        while (l < this.#categories.length && existe == false) {
-            if (this.#categories[l][0].Name == category.Name) {
-                //si existe guardo su posicion
-                existe = true;
-                pos = l;
-            }
-            l++;
-        }
-        //error si no existe
-        if (!existe) throw new InvalidValueException("category", category);
-        existe = false;
-        let index = 0;
-        let j = 0;
-        let cont = 0;
-        //si es un array de producciones
-        if (production instanceof Array) {
-            //mientras no se llegue al final del array dado
-            while (index < production.length) {
-                existe = false;
-                //compruebo que cada dato del array es valido
-                if (!(production[index] instanceof Production)) throw new InvalidAccessConstructorException("production", production);
-                //compara el #productions con cada elemento del array dado
-                while (j < this.#categories.length && existe == false) {
-                    if (production[index] == this.#categories[pos][1][j]) {
-                        existe = true;
-                        cont = j;
+                //funcion que añade una categoria de la lista de categorias
+                removeCategory(category) {
+                    if (!category) throw new EmptyValueException("category", category);
+                    if (!(category instanceof Category)) throw new InvalidAccessConstructorException("category", category);
+                    let borrado = false;
+                    let index = 0;
+                    //busca el nombre del curso a borrar
+                    while (index < this.#categories.length && borrado == false) {
+                        if (this.#categories[index][0] == category) {
+                            this.#categories.splice(index, 1);
+                            borrado = true;
+                        }
+                        index++;
                     }
-                    j++;
+                    if (borrado) {
+                        return this.#categories.length;
+                    } else throw new InvalidValueException("category", category);
                 }
-                //si no existe se ignora
-                if (existe) {
-                    //se borra la produccion correspondiente
-                    this.#categories[pos][1].splice(cont, 1);
-                }
-                j = 0;
-                index++;
-            }
-        } else {//si es solo una produccion
-            //compruebo que el dato es valido
-            if (!(production instanceof Production)) throw new InvalidAccessConstructorException("production", production);
-            //compruebo si existe
-            existe = false;
-            index = 0;
-            while (index < this.#categories.length && existe == false) {
-                if ((this.#productions[index] == production)) {
-                    existe = true;
-                }
-                index++;
-            }
-            //si existe se añade
-            if (!existe) {
-                this.addProduction(production);
-            }
-            //console.log(this.#categories[pos][1]) ;
-            index = 0;
-            cont = 0;
-            while (index < this.#categories.length && existe == false) {
-                if ((this.#categories[pos][1][index].Title == production.Title)) {
-                    existe = true;
-                    cont = index;
-                }
-                index++;
-            }
-            this.#categories[pos][1].splice(cont, 1);
-        }
-        return this.#categories[pos].length;
-    }
-    assignDirector(person, production) {
-        //compruebo que son validos
-        if (!person) throw new EmptyValueException("person", person);
-        if (!production) throw new EmptyValueException("production", production);
-        if (!(person instanceof Person)) throw new InvalidAccessConstructorException("person", person);
-        let l = 0;
-        let existe = false;
-        let pos = 0;
-        //compruebo si la categoria existe
-        while (l < this.#directors.length && existe == false) {
-            if (this.#directors[l][0].Name == person.Name) {
-                //si existe guardo su posicion
-                existe = true;
-                pos = l;
-            }
-            l++;
-        }
-        //la añado si no lo hace
-        if (!existe) {
-            this.addDirector(person);
-            pos = this.#categories.length - 1;
-        }
-        existe = false;
-        let index = 0;
-        let j = 0;
-        let cont = 0;
-        //si es un array de producciones
-        if (production instanceof Array) {
-            //mientras no se llegue al final del array dado
-            while (index < production.length) {
-                existe = false;
-                //compruebo que cada dato del array es valido
-                if (!(production[index] instanceof Production)) throw new InvalidAccessConstructorException("production", production);
-                //compara el #productions con cada elemento del array dado
-                while (j < this.#productions.length && existe == false) {
-                    if (production[index] == this.#productions[j]) {
-                        existe = true;
+                //Iterador que devuelve los datos de la lista de usuarios
+                get users() {
+                    // referencia para habilitar el closure en el objeto. En el generador se pierde la referencia this, por lo que hay que guardarla como closure
+                    let array = this.#users;
+                    // Los getter no admiten generadores, deben devolver un objeto iterable. [Symbol.iterator]() puede ser generador.
+                    return {
+                        *[Symbol.iterator]() {
+                            // Recorremos todos los autores menos el de por defecto.
+                            for (let i = 0; i < array.length; i++) {
+                                yield array[i];
+                            }
+                        }
                     }
-                    j++;
-                }//si no existe se añade
-                if (!existe) {
-                    this.addProduction(production[index]);
                 }
-                //se asigna a la categoria correspondiente
-                this.#directors[pos][1].push(production[index]);
-                index++;
-            }
-        } else {//si es solo una produccion
-            //compruebo que el dato es valido
-            if (!(production instanceof Production)) throw new InvalidAccessConstructorException("production", production);
-            //compruebo si existe
-            while (index < this.#directors.length && existe == false) {
-                if (!(this.#productions[index] == production)) {
-                    cont++;
-                }
-                index++;
-            }
-            //si existe se añade
-            if (cont == 0) {
-                this.addProduction(production);
-            }
-            //console.log(this.#categories[pos][1]) ;
-            //se añade a la categoria correspondiente
-            this.#directors[pos][1].push(production);
-        }
-        return this.#directors[pos].length;
-    }
-    deassignDirector(person, production) {
-        if (!person) throw new EmptyValueException("person", person);
-        if (!production) throw new EmptyValueException("production", production);
-        if (!(person instanceof Person)) throw new InvalidAccessConstructorException("person", person);
-        let l = 0;
-        let existe = false;
-        let pos = 0;
-        //compruebo si la categoria existe
-        while (l < this.#directors.length && existe == false) {
-            if (this.#directors[l][0].Name == person.Name) {
-                //si existe guardo su posicion
-                existe = true;
-                pos = l;
-            }
-            l++;
-        }
-        //error si no existe
-        if (!existe) throw new InvalidValueException("category", category);
-        existe = false;
-        let index = 0;
-        let j = 0;
-        let cont = 0;
-        //si es un array de producciones
-        if (production instanceof Array) {
-            //mientras no se llegue al final del array dado
-            while (index < production.length) {
-                existe = false;
-                //compruebo que cada dato del array es valido
-                if (!(production[index] instanceof Production)) throw new InvalidAccessConstructorException("production", production);
-                //compara el #productions con cada elemento del array dado
-                while (j < this.#directors.length && existe == false) {
-                    if (production[index] == this.#directors[pos][1][j]) {
-                        existe = true;
-                        cont = j;
+                //funcion que añade un usuario de la lista de usuarios
+                addUser(user) {
+                    if (!user) throw new EmptyValueException("user", user);
+                    if (!(user instanceof User)) throw new InvalidAccessConstructorException("user", user);
+                    for (let index = 0; index < this.#users.length; index++) {
+                        if (this.#users[index].Username == user.Username) throw new InvalidValueException("user", user);
+                        if (this.#users[index].Email == user.Email) throw new InvalidValueException("user", user);
                     }
-                    j++;
+                    this.#users.push(user);
+                    return this.#users.length;
                 }
-                //si no existe se ignora
-                if (existe) {
-                    //se borra la produccion correspondiente
-                    this.#directors[pos][1].splice(cont, 1);
+                //funcion que quita un usuarios de la lista de usuarios
+                removeUser(user) {
+                    if (!user) throw new EmptyValueException("user", user);
+                    if (!(user instanceof User)) throw new InvalidAccessConstructorException("user", user);
+                    let borrado = false;
+                    let index = 0;
+                    //busca el nombre del curso a borrar
+                    while (index < this.#users.length && borrado == false) {
+                        if (this.#users[index] == user) {
+                            this.#users.splice(index, 1);
+                            borrado = true;
+                        }
+                        index++;
+                    }
+                    if (borrado) {
+                        return this.#users.length;
+                    } else throw new InvalidValueException("user", user);
                 }
-                j = 0;
-                index++;
-            }
-        } else {//si es solo una produccion
-            //compruebo que el dato es valido
-            if (!(production instanceof Production)) throw new InvalidAccessConstructorException("production", production);
-            //compruebo si existe
-            existe = false;
-            index = 0;
-            while (index < this.#directors.length && existe == false) {
-                if ((this.#productions[index] == production)) {
-                    existe = true;
+                //Iterador que devuelve los datos de la lista de producciones
+                get productions() {
+                    // referencia para habilitar el closure en el objeto. En el generador se pierde la referencia this, por lo que hay que guardarla como closure
+                    let array = this.#productions;
+                    // Los getter no admiten generadores, deben devolver un objeto iterable. [Symbol.iterator]() puede ser generador.
+                    return {
+                        *[Symbol.iterator]() {
+                            // Recorremos todos los autores menos el de por defecto.
+                            for (let i = 0; i < array.length; i++) {
+                                yield array[i];
+                            }
+                        }
+                    }
                 }
-                index++;
-            }
-            //si existe se añade
-            if (!existe) {
-                this.addProduction(production);
-            }
-            //console.log(this.#directors[pos][1]) ;
-            index = 0;
-            cont = 0;
+                //funcion que añade una produccion de la lista de producciones
+                addProduction(production) {
+                    if (!production) throw new EmptyValueException("production", production);
+                    if (!(production instanceof Production)) throw new InvalidAccessConstructorException("production", production);
+                    for (let index = 0; index < this.#productions.length; index++) {
+                        if (this.#productions[index].Title == production.Title) throw new InvalidValueException("production", production);
+                    }
+                    this.#productions.push(production);
+                    return this.#productions.length;
+                }
+                //funcion que quita una produccion de la lista de producciones
+                removeProduction(production) {
+                    if (!production) throw new EmptyValueException("production", production);
+                    if (!(production instanceof Production)) throw new InvalidAccessConstructorException("production", production);
+                    let borrado = false;
+                    let index = 0;
+                    //busca el nombre del curso a borrar
+                    while (index < this.#productions.length && borrado == false) {
+                        if (this.#productions[index][0] == production) {
+                            this.#productions.splice(index, 1);
+                            borrado = true;
+                        }
+                        index++;
+                    }
+                    if (borrado) {
+                        return this.production.length;
+                    } else throw new InvalidValueException("production", production);
+                }
+                //getter de actores
+                get actors() {
+                    // referencia para habilitar el closure en el objeto. En el generador se pierde la referencia this, por lo que hay que guardarla como closure
+                    let array = this.#actors;
+                    // Los getter no admiten generadores, deben devolver un objeto iterable. [Symbol.iterator]() puede ser generador.
+                    return {
+                        *[Symbol.iterator]() {
+                            // Recorremos todos los autores menos el de por defecto.
+                            for (let i = 0; i < array.length; i++) {
+                                yield array[i];
+                            }
+                        }
+                    }
+                }
+                //funcion que añade un actor a la lista
+                addActor(actor) {
+                    //compruebo que es valido
+                    if (!actor) throw new EmptyValueException("actor", actor);
+                    if (!(actor instanceof Person)) throw new InvalidAccessConstructorException("actor", actor);
+                    for (let index = 0; index < this.#actors.length; index++) {
+                        if (this.#actors[index] == actor) throw new InvalidValueException("actor", actor);
+                    }
+                    let acto = [actor, []];
+                    this.#actors.push(acto);
+                    return this.#actors.length;
+                }
+                //funcion que quita un actor de la lista
+                removeActor(actor) {
+                    if (!actor) throw new EmptyValueException("actor", actor);
+                    if (!(actor instanceof Person)) throw new InvalidAccessConstructorException("actor", actor);
+                    let borrado = false;
+                    let index = 0;
+                    //busca el nombre del curso a borrar
+                    while (index < this.#actors.length && borrado == false) {
+                        if (this.#actors[index][0] == actor) {
+                            this.#actors.splice(index, 1);
+                            borrado = true;
+                        }
+                        index++;
+                    }
+                    if (borrado) {
+                        return this.#actors.length;
+                    } else throw new InvalidValueException("actor", actor);
+                }
+                //getter de actores
+                get directors() {
+                    // referencia para habilitar el closure en el objeto. En el generador se pierde la referencia this, por lo que hay que guardarla como closure
+                    let array = this.#directors;
+                    // Los getter no admiten generadores, deben devolver un objeto iterable. [Symbol.iterator]() puede ser generador.
+                    return {
+                        *[Symbol.iterator]() {
+                            // Recorremos todos los autores menos el de por defecto.
+                            for (let i = 0; i < array.length; i++) {
+                                yield array[i];
+                            }
+                        }
+                    }
+                }
+                //funcion que añade un actor a la lista
+                addDirector(director) {
+                    //compruebo que es valido
+                    if (!director) throw new EmptyValueException("director", director);
+                    if (!(director instanceof Person)) throw new InvalidAccessConstructorException("director", director);
+                    for (let index = 0; index < this.#directors.length; index++) {
+                        if (this.#directors[index] == director) throw new InvalidValueException("director", director);
+                    }
+                    let direc = [director, []];
+                    this.#directors.push(direc);
+                    return this.#directors.length;
+                }
+                //funcion que quita un actor de la lista
+                removeDirector(director) {
+                    if (!director) throw new EmptyValueException("director", director);
+                    if (!(director instanceof Person)) throw new InvalidAccessConstructorException("director", director);
+                    let borrado = false;
+                    let index = 0;
+                    //busca el nombre del curso a borrar
+                    while (index < this.#directors.length && borrado == false) {
+                        if (this.#directors[index][0] == director) {
+                            this.#directors.splice(index, 1);
+                            borrado = true;
+                        }
+                        index++;
+                    }
+                    if (borrado) {
+                        return this.#directors.length;
+                    } else throw new InvalidValueException("director", director);
+                }
+                //funcion que asigna producciones a una categoria
+                assignCategory(category, production) {
+                    //compruebo que son validos
+                    if (!category) throw new EmptyValueException("category", category);
+                    if (!production) throw new EmptyValueException("production", production);
 
-            while (index < this.#directors.length && existe == false) {
-                console.log(this.#directors[pos][1][index]);
-                if ((this.#directors[pos][1][index].Title == production.Title)) {
-                    existe = true;
-                    cont = index;
-                }
-                index++;
-            }
-            this.#directors[pos][1].splice(cont, 1);
-        }
-        return this.#directors[pos].length;
-    }
-    assignActor(person, production) {
-        if (!person) throw new EmptyValueException("person", person);
-        if (!production) throw new EmptyValueException("production", production);
-        if (!(person instanceof Person)) throw new InvalidAccessConstructorException("person", person);
-        let l = 0;
-        let existe = false;
-        let pos = 0;
-        //compruebo si la categoria existe
-        while (l < this.#actors.length && existe == false) {
-            if (this.#actors[l][0].Name == person.Name) {
-                //si existe guardo su posicion
-                existe = true;
-                pos = l;
-            }
-            l++;
-        }
-        //la añado si no lo hace
-        if (!existe) {
-            this.addDirector(person);
-            pos = this.#categories.length - 1;
-        }
-        existe = false;
-        let index = 0;
-        let j = 0;
-        let cont = 0;
-        //si es un array de producciones
-        if (production instanceof Array) {
-            //mientras no se llegue al final del array dado
-            while (index < production.length) {
-                existe = false;
-                //compruebo que cada dato del array es valido
-                if (!(production[index] instanceof Production)) throw new InvalidAccessConstructorException("production", production);
-                //compara el #productions con cada elemento del array dado
-                while (j < this.#productions.length && existe == false) {
-                    if (production[index] == this.#productions[j]) {
-                        existe = true;
+                    if (!(category instanceof Category)) throw new InvalidAccessConstructorException("category", category);
+                    let l = 0;
+                    let existe = false;
+                    let pos = 0;
+                    //compruebo si la categoria existe
+                    while (l < this.#categories.length && existe == false) {
+                        if (this.#categories[l][0].Name == category.Name) {
+                            //si existe guardo su posicion
+                            existe = true;
+                            pos = l;
+                        }
+                        l++;
                     }
-                    j++;
-                }//si no existe se añade
-                if (!existe) {
-                    this.addProduction(production[index]);
-                }
-                //se asigna a la categoria correspondiente
-                this.#actors[pos][1].push(production[index]);
-                index++;
-            }
-        } else {//si es solo una produccion
-            //compruebo que el dato es valido
-            if (!(production instanceof Production)) throw new InvalidAccessConstructorException("production", production);
-            //compruebo si existe
-            while (index < this.#actors.length && existe == false) {
-                if (!(this.#productions[index] == production)) {
-                    cont++;
-                }
-                index++;
-            }
-            //si existe se añade
-            if (cont == 0) {
-                this.addProduction(production);
-            }
-            //console.log(this.#categories[pos][1]) ;
-            //se añade a la categoria correspondiente
-            this.#actors[pos][1].push(production);
-        }
-        return this.#actors[pos].length;
-    }
-    deassignActor(person, production) {
-        if (!person) throw new EmptyValueException("person", person);
-        if (!production) throw new EmptyValueException("production", production);
-        if (!(person instanceof Person)) throw new InvalidAccessConstructorException("person", person);
-        let l = 0;
-        let existe = false;
-        let pos = 0;
-        //compruebo si la categoria existe
-        while (l < this.#actors.length && existe == false) {
-            if (this.#actors[l][0].Name == person.Name) {
-                //si existe guardo su posicion
-                existe = true;
-                pos = l;
-            }
-            l++;
-        }
-        //error si no existe
-        if (!existe) throw new InvalidValueException("person", person);
-        existe = false;
-        let index = 0;
-        let j = 0;
-        let cont = 0;
-        //si es un array de producciones
-        if (production instanceof Array) {
-            //mientras no se llegue al final del array dado
-            while (index < production.length) {
-                existe = false;
-                //compruebo que cada dato del array es valido
-                if (!(production[index] instanceof Production)) throw new InvalidAccessConstructorException("production", production);
-                //compara el #productions con cada elemento del array dado
-                while (j < this.#actors.length && existe == false) {
-                    if (production[index] == this.#actors[pos][1][j]) {
-                        existe = true;
-                        cont = j;
+                    //la añado si no lo hace
+                    if (!existe) {
+                        this.addCatecogy(category);
+                        pos = this.#categories.length - 1;
                     }
-                    j++;
+                    existe = false;
+                    let index = 0;
+                    let j = 0;
+                    let cont = 0;
+                    //si es un array de producciones
+                    if (production instanceof Array) {
+                        //mientras no se llegue al final del array dado
+                        while (index < production.length) {
+                            existe = false;
+                            //compruebo que cada dato del array es valido
+                            if (!(production[index] instanceof Production)) throw new InvalidAccessConstructorException("production", production);
+                            //compara el #productions con cada elemento del array dado
+                            while (j < this.#productions.length && existe == false) {
+                                if (production[index] == this.#productions[j]) {
+                                    existe = true;
+                                }
+                                j++;
+                            }
+                            //si no existe se añade
+                            if (!existe) {
+                                this.addProduction(production[index]);
+                            }
+                            //se asigna a la categoria correspondiente
+                            this.#categories[pos][1].push(production[index]);
+                            index++;
+                        }
+                    } else {//si es solo una produccion
+                        //compruebo que el dato es valido
+                        if (!(production instanceof Production)) throw new InvalidAccessConstructorException("production", production);
+                        //compruebo si existe
+                        while (index < this.#categories.length && existe == false) {
+                            if (!(this.#productions[index] == production)) {
+                                existe = true;
+                            }
+                            index++;
+                        }
+                        //si no  existe se añade
+                        if (!existe) {
+                            this.addProduction(production);
+                        }
+                        //console.log(this.#categories[pos][1]) ;
+                        //se añade a la categoria correspondiente
+                        this.#categories[pos][1].push(production);
+                    }
+                    return this.#categories[pos].length;
                 }
-                //si no existe se ignora
-                if (existe) {
-                    //se borra la produccion correspondiente
-                    this.#actors[pos][1].splice(cont, 1);
+                //funcion que desasigna producciones a una categoria
+                deassignCategory(category, production) {
+                    if (!category) throw new EmptyValueException("category", category);
+                    if (!production) throw new EmptyValueException("production", production);
+                    if (!(category instanceof Category)) throw new InvalidAccessConstructorException("category", category);
+                    let l = 0;
+                    let existe = false;
+                    let pos = 0;
+                    //compruebo si la categoria existe
+                    while (l < this.#categories.length && existe == false) {
+                        if (this.#categories[l][0].Name == category.Name) {
+                            //si existe guardo su posicion
+                            existe = true;
+                            pos = l;
+                        }
+                        l++;
+                    }
+                    //error si no existe
+                    if (!existe) throw new InvalidValueException("category", category);
+                    existe = false;
+                    let index = 0;
+                    let j = 0;
+                    let cont = 0;
+                    //si es un array de producciones
+                    if (production instanceof Array) {
+                        //mientras no se llegue al final del array dado
+                        while (index < production.length) {
+                            existe = false;
+                            //compruebo que cada dato del array es valido
+                            if (!(production[index] instanceof Production)) throw new InvalidAccessConstructorException("production", production);
+                            //compara el #productions con cada elemento del array dado
+                            while (j < this.#categories.length && existe == false) {
+                                if (production[index] == this.#categories[pos][1][j]) {
+                                    existe = true;
+                                    cont = j;
+                                }
+                                j++;
+                            }
+                            //si no existe se ignora
+                            if (existe) {
+                                //se borra la produccion correspondiente
+                                this.#categories[pos][1].splice(cont, 1);
+                            }
+                            j = 0;
+                            index++;
+                        }
+                    } else {//si es solo una produccion
+                        //compruebo que el dato es valido
+                        if (!(production instanceof Production)) throw new InvalidAccessConstructorException("production", production);
+                        //compruebo si existe
+                        existe = false;
+                        index = 0;
+                        while (index < this.#categories.length && existe == false) {
+                            if ((this.#productions[index] == production)) {
+                                existe = true;
+                            }
+                            index++;
+                        }
+                        //si existe se añade
+                        if (!existe) {
+                            this.addProduction(production);
+                        }
+                        //console.log(this.#categories[pos][1]) ;
+                        index = 0;
+                        cont = 0;
+                        while (index < this.#categories.length && existe == false) {
+                            if ((this.#categories[pos][1][index].Title == production.Title)) {
+                                existe = true;
+                                cont = index;
+                            }
+                            index++;
+                        }
+                        this.#categories[pos][1].splice(cont, 1);
+                    }
+                    return this.#categories[pos].length;
                 }
-                j = 0;
-                index++;
-            }
-        } else {//si es solo una produccion
-            //compruebo que el dato es valido
-            if (!(production instanceof Production)) throw new InvalidAccessConstructorException("production", production);
-            //compruebo si existe
-            existe = false;
-            index = 0;
-            while (index < this.#actors.length && existe == false) {
-                if ((this.#productions[index] == production)) {
-                    existe = true;
+                //funcion que sasigna producciones a un director
+                assignDirector(person, production) {
+                    //compruebo que son validos
+                    if (!person) throw new EmptyValueException("person", person);
+                    if (!production) throw new EmptyValueException("production", production);
+                    if (!(person instanceof Person)) throw new InvalidAccessConstructorException("person", person);
+                    let l = 0;
+                    let existe = false;
+                    let pos = 0;
+                    //compruebo si la categoria existe
+                    while (l < this.#directors.length && existe == false) {
+                        if (this.#directors[l][0].Name == person.Name) {
+                            //si existe guardo su posicion
+                            existe = true;
+                            pos = l;
+                        }
+                        l++;
+                    }
+                    //la añado si no lo hace
+                    if (!existe) {
+                        this.addDirector(person);
+                        pos = this.#categories.length - 1;
+                    }
+                    existe = false;
+                    let index = 0;
+                    let j = 0;
+                    let cont = 0;
+                    //si es un array de producciones
+                    if (production instanceof Array) {
+                        //mientras no se llegue al final del array dado
+                        while (index < production.length) {
+                            existe = false;
+                            //compruebo que cada dato del array es valido
+                            if (!(production[index] instanceof Production)) throw new InvalidAccessConstructorException("production", production);
+                            //compara el #productions con cada elemento del array dado
+                            while (j < this.#productions.length && existe == false) {
+                                if (production[index] == this.#productions[j]) {
+                                    existe = true;
+                                }
+                                j++;
+                            }//si no existe se añade
+                            if (!existe) {
+                                this.addProduction(production[index]);
+                            }
+                            //se asigna a la categoria correspondiente
+                            this.#directors[pos][1].push(production[index]);
+                            index++;
+                        }
+                    } else {//si es solo una produccion
+                        //compruebo que el dato es valido
+                        if (!(production instanceof Production)) throw new InvalidAccessConstructorException("production", production);
+                        //compruebo si existe
+                        while (index < this.#directors.length && existe == false) {
+                            if (!(this.#productions[index] == production)) {
+                                cont++;
+                            }
+                            index++;
+                        }
+                        //si existe se añade
+                        if (cont == 0) {
+                            this.addProduction(production);
+                        }
+                        //console.log(this.#categories[pos][1]) ;
+                        //se añade a la categoria correspondiente
+                        this.#directors[pos][1].push(production);
+                    }
+                    return this.#directors[pos].length;
                 }
-                index++;
-            }
-            //si existe se añade
-            if (!existe) {
-                this.addProduction(production);
-            }
-            //console.log(this.#actors[pos][1]) ;
-            index = 0;
-            cont = 0;
-            while (index < this.#actors.length && existe == false) {
-                if ((this.#actors[pos][1][index].Title == production.Title)) {
-                    existe = true;
-                    cont = index;
-                }
-                index++;
-            }
-            this.#actors[pos][1].splice(cont, 1);
-        }
-        return this.#actors[pos].length;
-    }
+                //funcion que desasigna producciones a un director
+                deassignDirector(person, production) {
+                    if (!person) throw new EmptyValueException("person", person);
+                    if (!production) throw new EmptyValueException("production", production);
+                    if (!(person instanceof Person)) throw new InvalidAccessConstructorException("person", person);
+                    let l = 0;
+                    let existe = false;
+                    let pos = 0;
+                    //compruebo si la categoria existe
+                    while (l < this.#directors.length && existe == false) {
+                        if (this.#directors[l][0].Name == person.Name) {
+                            //si existe guardo su posicion
+                            existe = true;
+                            pos = l;
+                        }
+                        l++;
+                    }
+                    //error si no existe
+                    if (!existe) throw new InvalidValueException("category", category);
+                    existe = false;
+                    let index = 0;
+                    let j = 0;
+                    let cont = 0;
+                    //si es un array de producciones
+                    if (production instanceof Array) {
+                        //mientras no se llegue al final del array dado
+                        while (index < production.length) {
+                            existe = false;
+                            //compruebo que cada dato del array es valido
+                            if (!(production[index] instanceof Production)) throw new InvalidAccessConstructorException("production", production);
+                            //compara el #productions con cada elemento del array dado
+                            while (j < this.#directors.length && existe == false) {
+                                if (production[index] == this.#directors[pos][1][j]) {
+                                    existe = true;
+                                    cont = j;
+                                }
+                                j++;
+                            }
+                            //si no existe se ignora
+                            if (existe) {
+                                //se borra la produccion correspondiente
+                                this.#directors[pos][1].splice(cont, 1);
+                            }
+                            j = 0;
+                            index++;
+                        }
+                    } else {//si es solo una produccion
+                        //compruebo que el dato es valido
+                        if (!(production instanceof Production)) throw new InvalidAccessConstructorException("production", production);
+                        //compruebo si existe
+                        existe = false;
+                        index = 0;
+                        while (index < this.#directors.length && existe == false) {
+                            if ((this.#productions[index] == production)) {
+                                existe = true;
+                            }
+                            index++;
+                        }
+                        //si existe se añade
+                        if (!existe) {
+                            this.addProduction(production);
+                        }
+                        //console.log(this.#directors[pos][1]) ;
+                        index = 0;
+                        cont = 0;
 
-    getCast(production) {
-        if (!production) throw new EmptyValueException("production", production);
-        if (!(production instanceof Production)) throw new InvalidAccessConstructorException("production", production);
-        // referencia para habilitar el closure en el objeto. En el generador se pierde la referencia this, por lo que hay que guardarla como closure
-        let array = this.#actors;
-        // Los getter no admiten generadores, deben devolver un objeto iterable. [Symbol.iterator]() puede ser generador.
-        return {
-            *[Symbol.iterator]() {
-                //digo para que pelicula trabajaron los actores
-                console.log("Para " + production.Title + " trabajaron ");
-                // Recorremos todos los actores.
-                for (let i = 0; i < array.length; i++) {
-                    //si en la produccion esta la dada se muestra el actor
-                    for (let index = 0; index < array[i][1].length; index++) {
-                        if (array[i][1][index] == production) {
-                            yield array[i][0];
+                        while (index < this.#directors.length && existe == false) {
+                            console.log(this.#directors[pos][1][index]);
+                            if ((this.#directors[pos][1][index].Title == production.Title)) {
+                                existe = true;
+                                cont = index;
+                            }
+                            index++;
+                        }
+                        this.#directors[pos][1].splice(cont, 1);
+                    }
+                    return this.#directors[pos].length;
+                }
+                //funcion que asigna producciones a un actor
+                assignActor(person, production) {
+                    if (!person) throw new EmptyValueException("person", person);
+                    if (!production) throw new EmptyValueException("production", production);
+                    if (!(person instanceof Person)) throw new InvalidAccessConstructorException("person", person);
+                    let l = 0;
+                    let existe = false;
+                    let pos = 0;
+                    //compruebo si la categoria existe
+                    while (l < this.#actors.length && existe == false) {
+                        if (this.#actors[l][0].Name == person.Name) {
+                            //si existe guardo su posicion
+                            existe = true;
+                            pos = l;
+                        }
+                        l++;
+                    }
+                    //la añado si no lo hace
+                    if (!existe) {
+                        this.addDirector(person);
+                        pos = this.#categories.length - 1;
+                    }
+                    existe = false;
+                    let index = 0;
+                    let j = 0;
+                    let cont = 0;
+                    //si es un array de producciones
+                    if (production instanceof Array) {
+                        //mientras no se llegue al final del array dado
+                        while (index < production.length) {
+                            existe = false;
+                            //compruebo que cada dato del array es valido
+                            if (!(production[index] instanceof Production)) throw new InvalidAccessConstructorException("production", production);
+                            //compara el #productions con cada elemento del array dado
+                            while (j < this.#productions.length && existe == false) {
+                                if (production[index] == this.#productions[j]) {
+                                    existe = true;
+                                }
+                                j++;
+                            }//si no existe se añade
+                            if (!existe) {
+                                this.addProduction(production[index]);
+                            }
+                            //se asigna a la categoria correspondiente
+                            this.#actors[pos][1].push(production[index]);
+                            index++;
+                        }
+                    } else {//si es solo una produccion
+                        //compruebo que el dato es valido
+                        if (!(production instanceof Production)) throw new InvalidAccessConstructorException("production", production);
+                        //compruebo si existe
+                        while (index < this.#actors.length && existe == false) {
+                            if (!(this.#productions[index] == production)) {
+                                cont++;
+                                pos=index;
+                            }
+                            index++;
+                        }
+                        //si existe se añade
+                        if (cont == 0) {
+                            this.addProduction(production);
+                        }
+                        //console.log(this.#categories[pos][1]) ;
+                        //se añade a la categoria correspondiente
+                        this.#actors[pos][1].push(production);
+                    }
+                    return this.#actors[pos].length;
+                }
+                //funcion que desasigna producciones a un actor
+                deassignActor(person, production) {
+                    if (!person) throw new EmptyValueException("person", person);
+                    if (!production) throw new EmptyValueException("production", production);
+                    if (!(person instanceof Person)) throw new InvalidAccessConstructorException("person", person);
+                    let l = 0;
+                    let existe = false;
+                    let pos = 0;
+                    //compruebo si la categoria existe
+                    while (l < this.#actors.length && existe == false) {
+                        if (this.#actors[l][0].Name == person.Name) {
+                            //si existe guardo su posicion
+                            existe = true;
+                            pos = l;
+                        }
+                        l++;
+                    }
+                    //error si no existe
+                    if (!existe) throw new InvalidValueException("person", person);
+                    existe = false;
+                    let index = 0;
+                    let j = 0;
+                    let cont = 0;
+                    //si es un array de producciones
+                    if (production instanceof Array) {
+                        //mientras no se llegue al final del array dado
+                        while (index < production.length) {
+                            existe = false;
+                            //compruebo que cada dato del array es valido
+                            if (!(production[index] instanceof Production)) throw new InvalidAccessConstructorException("production", production);
+                            //compara el #productions con cada elemento del array dado
+                            while (j < this.#actors.length && existe == false) {
+                                if (production[index] == this.#actors[pos][1][j]) {
+                                    existe = true;
+                                    cont = j;
+                                }
+                                j++;
+                            }
+                            //si no existe se ignora
+                            if (existe) {
+                                //se borra la produccion correspondiente
+                                this.#actors[pos][1].splice(cont, 1);
+                            }
+                            j = 0;
+                            index++;
+                        }
+                    } else {//si es solo una produccion
+                        //compruebo que el dato es valido
+                        if (!(production instanceof Production)) throw new InvalidAccessConstructorException("production", production);
+                        //compruebo si existe
+                        existe = false;
+                        index = 0;
+                        while (index < this.#actors.length && existe == false) {
+                            if ((this.#productions[index] == production)) {
+                                existe = true;
+                                pos=index;
+                            }
+                            index++;
+                        }
+                        //si existe se añade
+                        if (!existe) {
+                            this.addProduction(production);
+                        }
+                        //console.log(this.#actors[pos][1]) ;
+                        index = 0;
+                        cont = 0;
+                        //comprueba si existe y guarda su posicion en ese caso
+                        while (index < this.#actors.length && existe == false) {
+                            if ((this.#actors[pos][1][index].Title == production.Title)) {
+                                existe = true;
+                                cont = index;
+                            }
+                            index++;
+                        }
+                        this.#actors[pos][1].splice(cont, 1);
+                    }
+                    return this.#actors[pos].length;
+                }
+
+                getCast(production) {
+                    if (!production) throw new EmptyValueException("production", production);
+                    if (!(production instanceof Production)) throw new InvalidAccessConstructorException("production", production);
+                    // referencia para habilitar el closure en el objeto. En el generador se pierde la referencia this, por lo que hay que guardarla como closure
+                    let array = this.#actors;
+                    // Los getter no admiten generadores, deben devolver un objeto iterable. [Symbol.iterator]() puede ser generador.
+                    return {
+                        *[Symbol.iterator]() {
+                            //digo para que pelicula trabajaron los actores
+                            console.log("Para " + production.Title + " trabajaron ");
+                            // Recorremos todos los actores.
+                            for (let i = 0; i < array.length; i++) {
+                                //si en la produccion esta la dada se muestra el actor
+                                for (let index = 0; index < array[i][1].length; index++) {
+                                    if (array[i][1][index] == production) {
+                                        yield array[i][0];
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                getProductionsDirector(person) {
+                    if (!person) throw new EmptyValueException("person", person);
+                    if (!(person instanceof Person)) throw new InvalidAccessConstructorException("person", person);
+                    // referencia para habilitar el closure en el objeto. En el generador se pierde la referencia this, por lo que hay que guardarla como closure
+                    let array = this.#directors;
+                    // Los getter no admiten generadores, deben devolver un objeto iterable. [Symbol.iterator]() puede ser generador.
+                    return {
+                        *[Symbol.iterator]() {
+                            //digo para que pelicula trabajaron los directores
+                            console.log(person.Name + " dirigio ");
+                            // Recorremos todos los actores.
+                            for (let i = 0; i < array.length; i++) {
+                                //si en la produccion esta la dada se muestra el director
+                                if (array[i][0] == person) {
+                                    for (let index = 0; index < array[i][1].length; index++) {
+                                        yield array[1][i][index];
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                getProductionsActor(person) {
+                    if (!person) throw new EmptyValueException("person", person);
+                    if (!(person instanceof Person)) throw new InvalidAccessConstructorException("person", person);
+                    // referencia para habilitar el closure en el objeto. En el generador se pierde la referencia this, por lo que hay que guardarla como closure
+                    let array = this.#actors;
+                    // Los getter no admiten generadores, deben devolver un objeto iterable. [Symbol.iterator]() puede ser generador.
+                    return {
+                        *[Symbol.iterator]() {
+                            //digo para que pelicula trabajaron los directores
+                            console.log(person.Name + " actuo en ");
+                            // Recorremos todos los actores.
+                            for (let i = 0; i < array.length; i++) {
+                                //si en la produccion esta la dada se muestra el actor
+                                if (array[i][0] == person) {
+                                    for (let index = 0; index < array[i][1].length; index++) {
+                                        yield array[1][i][index];
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                getProductionsCategory(category) {
+                    if (!category) throw new EmptyValueException("category", category);
+                    if (!(category instanceof Category)) throw new InvalidAccessConstructorException("category", category);
+                    // referencia para habilitar el closure en el objeto. En el generador se pierde la referencia this, por lo que hay que guardarla como closure
+                    let array = this.#categories;
+                    // Los getter no admiten generadores, deben devolver un objeto iterable. [Symbol.iterator]() puede ser generador.
+                    return {
+                        *[Symbol.iterator]() {
+                            //digo para que pelicula trabajaron los directores
+                            console.log("Son de " + category.Name);
+                            // Recorremos todos los actores.
+                            for (let i = 0; i < array.length; i++) {
+                                //si en la produccion esta la dada se muestra el actor
+                                if (array[i][0] == category) {
+                                    for (let index = 0; index < array[i][1].length; index++) {
+                                        yield array[i][1][index];
+                                    }
+                                }
+                            }
                         }
                     }
                 }
             }
-        }
-    }
-    getProductionsDirector(person) {
-        if (!person) throw new EmptyValueException("person", person);
-        if (!(person instanceof Person)) throw new InvalidAccessConstructorException("person", person);
-        // referencia para habilitar el closure en el objeto. En el generador se pierde la referencia this, por lo que hay que guardarla como closure
-        let array = this.#directors;
-        // Los getter no admiten generadores, deben devolver un objeto iterable. [Symbol.iterator]() puede ser generador.
-        return {
-            *[Symbol.iterator]() {
-                //digo para que pelicula trabajaron los directores
-                console.log(person.Name + " dirigio ");
-                // Recorremos todos los actores.
-                for (let i = 0; i < array.length; i++) {
-                    //si en la produccion esta la dada se muestra el actor
-                    if (array[i][0] == person) {
-                        for (let index = 0; index < array[i][1].length; index++) {
-                            yield array[1][i][index];
-                        }
-                    }
-                }
+            //declaro videosystem con un nombre por defecto y lo devuelvo para poder usarlo
+            let vi=new VideoSystem("Defect");
+            return vi;
+        } return {
+            // Devuelve un objeto con el método getInstance
+            getInstance: function () {
+                if (!instantiated) {
+                    //Si la variable instantiated es undefined, priemera ejecución, ejecuta init. 
+                    instantiated = init();
+                    //instantiated contiene el objeto único 
+                } return instantiated; //Si ya está asignado devuelve la asignación. 
             }
-        }
-    }
-    getProductionsActor(person) {
-        if (!person) throw new EmptyValueException("person", person);
-        if (!(person instanceof Person)) throw new InvalidAccessConstructorException("person", person);
-        // referencia para habilitar el closure en el objeto. En el generador se pierde la referencia this, por lo que hay que guardarla como closure
-        let array = this.#actors;
-        // Los getter no admiten generadores, deben devolver un objeto iterable. [Symbol.iterator]() puede ser generador.
-        return {
-            *[Symbol.iterator]() {
-                //digo para que pelicula trabajaron los directores
-                console.log(person.Name + " actuo en ");
-                // Recorremos todos los actores.
-                for (let i = 0; i < array.length; i++) {
-                    //si en la produccion esta la dada se muestra el actor
-                    if (array[i][0] == person) {
-                        for (let index = 0; index < array[i][1].length; index++) {
-                            yield array[1][i][index];
-                        }
-                    }
-                }
-            }
-        }
-    }
-    getProductionsCategory(category) {
-        if (!category) throw new EmptyValueException("category", category);
-        if (!(category instanceof Category)) throw new InvalidAccessConstructorException("category", category);
-        // referencia para habilitar el closure en el objeto. En el generador se pierde la referencia this, por lo que hay que guardarla como closure
-        let array = this.#categories;
-        // Los getter no admiten generadores, deben devolver un objeto iterable. [Symbol.iterator]() puede ser generador.
-        return {
-            *[Symbol.iterator]() {
-                //digo para que pelicula trabajaron los directores
-                console.log("Son de "+category.Name);
-                // Recorremos todos los actores.
-                for (let i = 0; i < array.length; i++) {
-                    //si en la produccion esta la dada se muestra el actor
-                    if (array[i][0] == category) {
-                        for (let index = 0; index < array[i][1].length; index++) {
-                            yield array[i][1][index];
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
+        };
+    })();
 
 //test
 console.log("Test");
+//declaro variables
 let act = new Person("Paco", "lo", "la", "10/05/1990", "");
 let act2 = new Person("Rosa", "lo", "la", "10/05/1990", "");
 let act3 = new Person("Lis", "lo", "la", "10/05/1990", "");
@@ -993,23 +1013,17 @@ let prod2 = new Movie("Sparta", "Español", "20/03/2010", "esto es esparta", "a"
 let prod3 = new Serie("Mellizos", "Español", "20/03/2010", "o gemelos?", "a", r, c, 8);
 //let prod4 = new Production("Mellizos", "Español", "20/03/2010", "o gemelos?", "a");//da error de abstracto
 
-
-let v = new VideoSystem("Video", user, prod, cat, act, dir);
+let v = VideoSystem.getInstance();
+//declaro los arrays para llamar a los get iteradores
 let di = v.directors;
 let ac = v.actors;
 let ca = v.categories;
-
-console.log("Insercion de datos");
-
-console.log(v.addUser(user2));
-console.log(v.removeUser(user2));
+let us = v.users;
 
 
-
+console.log(v.name("Video"));
 console.log(v.Name);
-console.log(v.users);
 console.log(v.productions);//sale iterador ya que son privadas y no pueden acceder al original
-console.log(v.categories);
 for (const iterator of ac) {
     console.log(iterator);
 }
@@ -1017,6 +1031,13 @@ for (const iterator of ac) {
 for (const iterator of di) {
     console.log(iterator);
 }
+//meto datos por defecto
+v.addActor(act);
+v.addCatecogy(cat);
+v.addDirector(dir);
+v.addProduction(prod);
+v.addUser(user);
+
 //categorias
 console.log("Categorias");
 console.log(v.addCatecogy(cat2));
@@ -1031,7 +1052,7 @@ console.log(v.addCatecogy(cat2));
 for (const iterator of ca) {
     console.log(iterator);
 }
-
+//pruebo assign a una categoria de 1 y de varios productos
 console.log(v.assignCategory(cat, prod));
 for (const iterator of ca) {
     console.log(iterator);
@@ -1067,8 +1088,7 @@ for (const iterator of di) {
     console.log(iterator);
 }
 console.log(v.addDirector(dir2));
-
-/*
+//pruebo assign a un director de 1 y de varios productos
 console.log(v.assignDirector(dir, prod));
 for (const iterator of di) {
     console.log(iterator);
@@ -1088,15 +1108,19 @@ for (const iterator of di) {
 console.log(v.assignDirector(dir2, prods));
 //console.log(v.#categories[1][1][1]);
 //actores
+console.log("actores");
+
 console.log(v.addActor(act2));
-for (const iterator of a) {
+for (const iterator of ac) {
     console.log(iterator);
 }
 console.log(v.removeActor(act2));
-for (const iterator of di) {
+for (const iterator of ac) {
     console.log(iterator);
 }
 console.log(v.addActor(act2));
+
+//pruebo assign a un actor de 1 y de varios productos
 console.log(v.assignActor(act, prod));
 for (const iterator of ac) {
     console.log(iterator);
@@ -1113,8 +1137,21 @@ console.log(v.deassignActor(act2, prods));
 for (const iterator of ac) {
     console.log(iterator);
 }
+//asigno de vuelta
 console.log(v.assignActor(act2, prods));
 console.log(v.assignActor(act, prod2));
+
+//Usuarios
+console.log("Usuarios");
+console.log(v.addUser(user2));
+for (const iterator of us) {
+    console.log(iterator);
+}
+console.log(v.removeUser(user2));
+for (const iterator of us) {
+    console.log(iterator);
+}
+console.log(v.addUser(user2));
 //cast
 for (const iterator of v.getCast(prod2)) {
     console.log(iterator);
@@ -1134,7 +1171,6 @@ for (const iterator of v.getProductionsActor(act2)) {
 for (const iterator of v.getProductionsCategory(cat2)) {
     console.log(iterator);
 }
-*/
 export {
     BaseException,
     InvalidAccessConstructorException,
