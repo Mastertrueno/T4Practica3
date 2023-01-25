@@ -44,7 +44,7 @@ class Category {
         this.Description = description;
     }
     toString() {
-        return this.constructor.Name + " " +this.description;
+        return this.constructor.Name + " " + this.description;
     }
 }
 
@@ -60,7 +60,7 @@ class Resource {
         this.Link = link;
     }
     toString() {
-        return this.constructor.Duration + " " +this.Link;
+        return this.constructor.Duration + " " + this.Link;
     }
 }
 
@@ -82,7 +82,7 @@ class Production {
         this.Synopsis = synopsis;
         this.Image = image;
     }
-    
+
 }
 class Movie extends Production {
     Resource;
@@ -98,7 +98,7 @@ class Movie extends Production {
         this.Locations = locations;
     }
     toString() {
-        return this.constructor.title + " " +this.Resource+ " " +this.Locations;
+        return this.constructor.title + " " + this.Resource + " " + this.Locations;
     }
 }
 
@@ -268,11 +268,13 @@ class VideoSystem {
     }
 
     removeCategory(category) {
+        if (!category) throw new EmptyValueException("category", category);
+        if (!(category instanceof Category)) throw new InvalidAccessConstructorException("category", category);
         let borrado = false;
         let index = 0;
         //busca el nombre del curso a borrar
         while (index < this.#categories.length && borrado == false) {
-            if (this.#categories[index][0].Name == category.Name) {
+            if (this.#categories[index][0] == category) {
                 this.#categories.splice(index, 1);
                 borrado = true;
             }
@@ -313,7 +315,7 @@ class VideoSystem {
         let index = 0;
         //busca el nombre del curso a borrar
         while (index < this.#users.length && borrado == false) {
-            if (this.#users[index] == user) {
+            if (this.#users[index][0] == user) {
                 this.#users.splice(index, 1);
                 borrado = true;
             }
@@ -352,7 +354,7 @@ class VideoSystem {
         let index = 0;
         //busca el nombre del curso a borrar
         while (index < this.#productions.length && borrado == false) {
-            if (this.#productions[index] == production) {
+            if (this.#productions[index][0] == production) {
                 this.#productions.splice(index, 1);
                 borrado = true;
             }
@@ -396,7 +398,7 @@ class VideoSystem {
         let index = 0;
         //busca el nombre del curso a borrar
         while (index < this.#actors.length && borrado == false) {
-            if (this.#actors[index] == actor) {
+            if (this.#actors[index][0] == actor) {
                 this.#actors.splice(index, 1);
                 borrado = true;
             }
@@ -440,7 +442,7 @@ class VideoSystem {
         let index = 0;
         //busca el nombre del curso a borrar
         while (index < this.#directors.length && borrado == false) {
-            if (this.#directors[index] == director) {
+            if (this.#directors[index][0] == director) {
                 this.#directors.splice(index, 1);
                 borrado = true;
             }
@@ -889,7 +891,7 @@ class VideoSystem {
         return {
             *[Symbol.iterator]() {
                 //digo para que pelicula trabajaron los actores
-                console.log("Para " + production.Title + " trabajaron ")
+                console.log("Para " + production.Title + " trabajaron ");
                 // Recorremos todos los actores.
                 for (let i = 0; i < array.length; i++) {
                     //si en la produccion esta la dada se muestra el actor
@@ -910,14 +912,14 @@ class VideoSystem {
         // Los getter no admiten generadores, deben devolver un objeto iterable. [Symbol.iterator]() puede ser generador.
         return {
             *[Symbol.iterator]() {
-                //digo para que pelicula trabajaron los actores
-                console.log("Para " + production.Title + " trabajaron ")
+                //digo para que pelicula trabajaron los directores
+                console.log(person.Name + " dirigio ");
                 // Recorremos todos los actores.
                 for (let i = 0; i < array.length; i++) {
                     //si en la produccion esta la dada se muestra el actor
-                    for (let index = 0; index < array[i][1].length; index++) {
-                        if (array[i][1][index] == production) {
-                            yield array[i][0];
+                    if (array[i][0] == person) {
+                        for (let index = 0; index < array[i][1].length; index++) {
+                            yield array[1][i][index];
                         }
                     }
                 }
@@ -928,13 +930,20 @@ class VideoSystem {
         if (!person) throw new EmptyValueException("person", person);
         if (!(person instanceof Person)) throw new InvalidAccessConstructorException("person", person);
         // referencia para habilitar el closure en el objeto. En el generador se pierde la referencia this, por lo que hay que guardarla como closure
-        let array = this.#directors;
+        let array = this.#actors;
         // Los getter no admiten generadores, deben devolver un objeto iterable. [Symbol.iterator]() puede ser generador.
         return {
             *[Symbol.iterator]() {
-                // Recorremos todos los autores menos el de por defecto.
+                //digo para que pelicula trabajaron los directores
+                console.log(person.Name + " actuo en ");
+                // Recorremos todos los actores.
                 for (let i = 0; i < array.length; i++) {
-                    yield array[i];
+                    //si en la produccion esta la dada se muestra el actor
+                    if (array[i][0] == person) {
+                        for (let index = 0; index < array[i][1].length; index++) {
+                            yield array[1][i][index];
+                        }
+                    }
                 }
             }
         }
@@ -943,13 +952,20 @@ class VideoSystem {
         if (!category) throw new EmptyValueException("category", category);
         if (!(category instanceof Category)) throw new InvalidAccessConstructorException("category", category);
         // referencia para habilitar el closure en el objeto. En el generador se pierde la referencia this, por lo que hay que guardarla como closure
-        let array = this.#directors;
+        let array = this.#categories;
         // Los getter no admiten generadores, deben devolver un objeto iterable. [Symbol.iterator]() puede ser generador.
         return {
             *[Symbol.iterator]() {
-                // Recorremos todos los autores menos el de por defecto.
+                //digo para que pelicula trabajaron los directores
+                console.log("Son de "+category.Name);
+                // Recorremos todos los actores.
                 for (let i = 0; i < array.length; i++) {
-                    yield array[i];
+                    //si en la produccion esta la dada se muestra el actor
+                    if (array[i][0] == category) {
+                        for (let index = 0; index < array[i][1].length; index++) {
+                            yield array[i][1][index];
+                        }
+                    }
                 }
             }
         }
@@ -984,10 +1000,12 @@ let ac = v.actors;
 let ca = v.categories;
 
 console.log("Insercion de datos");
-console.log(v.addActor(act2));
+
 console.log(v.addUser(user2));
-console.log(v.addCatecogy(cat2));
-console.log(v.addDirector(dir2));
+console.log(v.removeUser(user2));
+
+
+
 console.log(v.Name);
 console.log(v.users);
 console.log(v.productions);//sale iterador ya que son privadas y no pueden acceder al original
@@ -1001,9 +1019,19 @@ for (const iterator of di) {
 }
 //categorias
 console.log("Categorias");
+console.log(v.addCatecogy(cat2));
 for (const iterator of ca) {
     console.log(iterator);
 }
+console.log(v.removeCategory(cat2));
+for (const iterator of ca) {
+    console.log(iterator);
+}
+console.log(v.addCatecogy(cat2));
+for (const iterator of ca) {
+    console.log(iterator);
+}
+
 console.log(v.assignCategory(cat, prod));
 for (const iterator of ca) {
     console.log(iterator);
@@ -1026,8 +1054,21 @@ console.log(v.deassignCategory(cat2, prods));
 for (const iterator of ca) {
     console.log(iterator);
 }
+console.log(v.assignCategory(cat2, prods));
+
 //directores
 console.log("Directores");
+console.log(v.addDirector(dir2));
+for (const iterator of di) {
+    console.log(iterator);
+}
+console.log(v.removeDirector(dir2));
+for (const iterator of di) {
+    console.log(iterator);
+}
+console.log(v.addDirector(dir2));
+
+/*
 console.log(v.assignDirector(dir, prod));
 for (const iterator of di) {
     console.log(iterator);
@@ -1043,9 +1084,19 @@ for (const iterator of di) {
 console.log(v.deassignDirector(dir2, prods));
 for (const iterator of di) {
     console.log(iterator);
-}//console.log(v.#categories[1][1][1]);
+}
+console.log(v.assignDirector(dir2, prods));
+//console.log(v.#categories[1][1][1]);
 //actores
-console.log("Actores");
+console.log(v.addActor(act2));
+for (const iterator of a) {
+    console.log(iterator);
+}
+console.log(v.removeActor(act2));
+for (const iterator of di) {
+    console.log(iterator);
+}
+console.log(v.addActor(act2));
 console.log(v.assignActor(act, prod));
 for (const iterator of ac) {
     console.log(iterator);
@@ -1064,11 +1115,26 @@ for (const iterator of ac) {
 }
 console.log(v.assignActor(act2, prods));
 console.log(v.assignActor(act, prod2));
+//cast
 for (const iterator of v.getCast(prod2)) {
     console.log(iterator);
 }
-
-
+//directores
+for (const iterator of v.getProductionsDirector(dir2)) {
+    console.log(iterator);
+}
+for (const iterator of di) {
+    console.log(iterator);
+}
+//actores
+for (const iterator of v.getProductionsActor(act2)) {
+    console.log(iterator);
+}
+//categorias
+for (const iterator of v.getProductionsCategory(cat2)) {
+    console.log(iterator);
+}
+*/
 export {
     BaseException,
     InvalidAccessConstructorException,
